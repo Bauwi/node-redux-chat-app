@@ -1,5 +1,5 @@
 {
-  "name": "boilerplate-react-app",
+  "name": "node-redux-chat-app",
   "version": "1.0.0",
   "engines": {
     "node": "8.6.0"
@@ -67,5 +67,5 @@
     "react-test-renderer": "16.0.0",
     "webpack-dev-server": "2.5.1"
   },
-  "repository": "git@github.com:Bauwi/expensify-app.git"
+  "repository": "git@github.com:Bauwi/node-redux-chat-app.git"
 }
