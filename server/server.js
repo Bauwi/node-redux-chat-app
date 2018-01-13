@@ -1,167 +1,122 @@
-require("./config/config.js");
+require("./config/config");
+require("./db/mongoose");
 
+const path = require("path");
+const http = require("http");
 const express = require("express");
-const _ = require("lodash");
-const bodyParser = require("body-parser");
-const { ObjectID } = require("mongodb");
+const socketIO = require("socket.io");
 
-const { mongoose } = require("./db/mongoose");
-const { Todo } = require("./models/todo");
-const { User } = require("./models/user");
-const { authenticate } = require("./middleware/authenticate");
+const { generateMessage, generateLocationMessage } = require("./utils/message");
+const { isRealString } = require("./utils/validation.js");
+const { Users } = require("./utils/users");
+const { Room } = require("./models/room");
+
+const publicPath = path.join(__dirname, "../public");
+const port = process.env.PORT || 3000;
 
 const app = express();
-const port = process.env.PORT;
+const server = http.createServer(app);
+const io = socketIO(server);
+const users = new Users();
 
-app.use(bodyParser.json());
+app.use(express.static(publicPath));
 
-app.post("/todos", authenticate, (req, res) => {
-  const todo = new Todo({
-    text: req.body.text,
-    _creator: req.user._id
+io.on("connection", socket => {
+  console.log("New user connected.");
+
+  socket.on("join", (params, callback) => {
+    // if (!isRealString(params.name) || !isRealString(params.room)) {
+    //   return callback("name and room name required.");
+    // }
+
+    console.log("user joined");
+    console.log(params);
+    socket.join(params.room);
+    users.removeUser(socket.id);
+    users.addUser(socket.id, params.name, params.room);
+
+    io.to(params.room).emit("updateUserList", users.getUserList(params.room));
+
+    socket.emit(
+      "newMessage",
+      generateMessage("Admin", "Welcome to the chat app.")
+    );
+
+    socket.broadcast
+      .to(params.room)
+      .emit("newMessage", generateMessage("Admin", `${params.name} joined.`));
+
+    callback();
   });
 
-  todo.save().then(
-    doc => {
-      res.send(doc);
-    },
-    e => {
-      res.status(400).send(e);
-    }
-  );
-});
-
-app.get("/todos", authenticate, (req, res) => {
-  Todo.find({
-    _creator: req.user._id
-  }).then(
-    todos => {
-      res.send({ todos });
-    },
-    e => {
-      res.status(400).send(e);
-    }
-  );
-});
-
-app.get("/todos/:id", authenticate, (req, res) => {
-  const { id } = req.params;
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-  Todo.findOne({
-    _id: id,
-    _creator: req.user._id
-  })
-    .then(todo => {
-      if (!todo) {
-        return res.status(404).send();
-      }
-      res.send({ todo });
-    })
-    .catch(e => res.status(400).send());
-});
-
-app.delete("/todos/:id", authenticate, (req, res) => {
-  const { id } = req.params;
-
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-
-  Todo.findOneAndRemove({
-    _id: id,
-    _creator: req.user._id
-  })
-    .then(todo => {
-      if (!todo) {
-        return res.status(404).send();
-      }
-
-      res.status(200).send({ todo });
-    })
-    .catch(e => res.status(400).send());
-});
-
-app.patch("/todos/:id", authenticate, (req, res) => {
-  const { id } = req.params;
-  const body = _.pick(req.body, ["text", "completed"]);
-
-  if (!ObjectID.isValid(id)) {
-    return res.status(404).send();
-  }
-
-  if (_.isBoolean(body.completed) && body.completed) {
-    body.completedAt = new Date().getTime();
-  } else {
-    body.completed = false;
-    body.completedAt = null;
-  }
-
-  Todo.findOneAndUpdate(
-    {
-      _id: id,
-      _creator: req.user._id
-    },
-    { $set: body },
-    { new: true }
-  )
-    .then(todo => {
-      if (!todo) {
-        return res.status(404).send();
-      }
-
-      res.send({ todo });
-    })
-    .catch(e => res.status(400).send());
-});
-
-app.post("/users", (req, res) => {
-  const user = new User(_.pick(req.body, ["email", "password"]));
-  user
-    .save()
-    .then(() => {
-      return user.generateAuthToken();
-    })
-    .then(token => {
-      res.header("x-auth", token).send(user);
-    })
-    .catch(e => {
-      res.status(400).send(e);
+  socket.on("enterRoom", roomName => {
+    const roomItem = new Room({
+      name: roomName
     });
-});
+    Room.findOne({ name: roomName }, (err, room) => {
+      if (err) {
+        return console.log("Something went wrong.");
+      }
+      if (!room) {
+        roomItem.save().then(addedRoom => {
+          console.log(
+            `Room : ${addedRoom.name} room added. Its id is ${addedRoom._id}`
+          );
+          io.to(addedRoom.name).emit("roomReady", addedRoom);
+        });
+      } else {
+        io.to(room.name).emit("roomReady", room);
+      }
 
-app.get("/users/me", authenticate, (req, res) => {
-  res.send(req.user);
-});
-
-app.post("/users/login", (req, res) => {
-  const body = _.pick(req.body, ["email", "password"]);
-
-  User.findByCredentials(body.email, body.password)
-    .then(user => {
-      user.generateAuthToken().then(token => {
-        res.header("x-auth", token).send(user);
-      });
-    })
-    .catch(e => {
-      res.status(400).send();
+      console.log("room: ", room);
     });
-});
+  });
 
-app.delete("/users/me/token", authenticate, (req, res) => {
-  req.user.removeToken(req.token).then(
-    () => {
-      res.status(200).send();
-    },
-    () => {
-      res.status(400).send();
+  socket.on("createMessage", (message, room, callback) => {
+    console.log("the room is on fire", room);
+    const user = users.getUser(socket.id);
+    // const user = {
+    //   name: "some name"
+    // };
+    console.log("roomee: ", room.name);
+    return Room.findById(room._id)
+      .then(resRoom => {
+        // console.log("resRoom._id", resRoom._id);
+        if (resRoom && isRealString(message.text)) {
+          return resRoom.addMessage(generateMessage(user.name, message.text));
+        } else {
+          return Promise.reject();
+        }
+      })
+      .then(message => {
+        io
+          .to(room.name)
+          .emit("newMessage", generateMessage(user.name, message.text));
+      })
+      .catch(e => console.log(e));
+
+    callback();
+  });
+
+  // socket.on("createLocationMessage", coords => {
+  //   io.emit(
+  //     "newLocationMessage",
+  //     generateLocationMessage("Admin", coords.latitude, coords.longitude)
+  //   );
+  // });
+
+  socket.on("disconnect", () => {
+    const user = users.removeUser(socket.id);
+
+    if (user) {
+      io.to(user.room).emit("updateUserList", users.getUserList(user.room));
+      io
+        .to(user.room)
+        .emit("newMessage", generateMessage("Admin", `${user.name} has left.`));
     }
-  );
+  });
 });
 
-app.listen(port, () => {
-  console.log(`Started up at port ${port}`);
+server.listen(port, () => {
+  console.log(`Started server at port ${port}`);
 });
-
-module.exports = { app };
