@@ -1,7 +1,7 @@
 import React from "react";
 import moment from "moment";
 
-export default ({ from, text, createdAt }) => {
+export default ({ from, text, createdAt, url }) => {
   return (
     <li className="message">
       <div className="message__title">
@@ -9,7 +9,13 @@ export default ({ from, text, createdAt }) => {
         <span>{moment(createdAt).format("Do MMM, YYYY")}</span>
       </div>
       <div className="message__body">
-        <p>{text}</p>
+        {text ? (
+          <p>{text}</p>
+        ) : (
+          <a href={url} target="_blank">
+            Check where I am !
+          </a>
+        )}
       </div>
     </li>
   );

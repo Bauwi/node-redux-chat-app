@@ -22,15 +22,10 @@ const users = new Users();
 app.use(express.static(publicPath));
 
 io.on("connection", socket => {
-  console.log("New user connected.");
-
   socket.on("join", (params, callback) => {
     // if (!isRealString(params.name) || !isRealString(params.room)) {
     //   return callback("name and room name required.");
     // }
-
-    console.log("user joined");
-    console.log(params);
     socket.join(params.room);
     users.removeUser(socket.id);
     users.addUser(socket.id, params.name, params.room);
@@ -67,21 +62,16 @@ io.on("connection", socket => {
       } else {
         io.to(room.name).emit("roomReady", room);
       }
-
-      console.log("room: ", room);
     });
   });
 
   socket.on("createMessage", (message, room, callback) => {
-    console.log("the room is on fire", room);
     const user = users.getUser(socket.id);
     // const user = {
     //   name: "some name"
     // };
-    console.log("roomee: ", room.name);
     return Room.findById(room._id)
       .then(resRoom => {
-        // console.log("resRoom._id", resRoom._id);
         if (resRoom && isRealString(message.text)) {
           return resRoom.addMessage(generateMessage(user.name, message.text));
         } else {
@@ -98,12 +88,30 @@ io.on("connection", socket => {
     callback();
   });
 
-  // socket.on("createLocationMessage", coords => {
-  //   io.emit(
-  //     "newLocationMessage",
-  //     generateLocationMessage("Admin", coords.latitude, coords.longitude)
-  //   );
-  // });
+  socket.on("createLocationMessage", (coords, room) => {
+    return Room.findById(room._id)
+      .then(resRoom => {
+        if (resRoom && coords.latitude && coords.longitude) {
+          return resRoom.addMessage(
+            generateLocationMessage(
+              "user.name",
+              coords.latitude,
+              coords.longitude
+            )
+          );
+        } else {
+          return Promise.reject();
+        }
+      })
+      .then(message => {
+        io
+          .to(room.name)
+          .emit(
+            "newLocationMessage",
+            generateLocationMessage("Admin", coords.latitude, coords.longitude)
+          );
+      });
+  });
 
   socket.on("disconnect", () => {
     const user = users.removeUser(socket.id);

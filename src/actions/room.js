@@ -27,6 +27,5 @@ export const startInitialLoad = (room, loadedStatus) => dispatch => {
     if (!loadedStatus) {
       resolve(dispatch(initialLoad(room)));
     }
-    reject("Room is already loaded.");
   }).then(() => dispatch(roomHasLoaded(true)));
 };

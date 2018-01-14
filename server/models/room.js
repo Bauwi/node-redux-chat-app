@@ -16,7 +16,6 @@ const RoomSchema = new mongoose.Schema({
       },
       text: {
         type: String,
-        required: true,
         minLength: 1,
         trim: true
       },
@@ -25,7 +24,9 @@ const RoomSchema = new mongoose.Schema({
         // required: true
       },
       url: {
-        type: Boolean
+        type: String,
+        minLength: 1,
+        trim: true
       }
     }
   ],

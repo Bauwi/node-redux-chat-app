@@ -14,7 +14,6 @@ export class ChatMessageList extends Component {
     ));
 
   render() {
-    console.log(this.props.messages[5]);
     return (
       <ol id="messages" className="chat__messages">
         {this.renderMessages()}

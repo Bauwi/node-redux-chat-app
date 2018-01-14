@@ -17,11 +17,6 @@ export default (state = roomDefaultState, action) => {
         room: action.room,
         messages: [...state.messages, ...action.room.messages]
       };
-    // case "STORE_SOCKET":
-    //   return {
-    //     ...state,
-    //     socket: action.socket
-    //   };
     case "ROOM_HAS_LOADED":
       return {
         ...state,
