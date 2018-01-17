@@ -2,7 +2,7 @@
   "name": "node-redux-chat-app",
   "version": "1.0.0",
   "engines": {
-    "node": "8.6.0"
+    "node": "9.3.0"
   },
   "main": "index.js",
   "author": "Kevin Philippe",
@@ -15,6 +15,7 @@
     "start": "node server/server.js",
     "heroku-postbuild": "yarn run build:prod"
   },
+
   "proxy": "http://localhost:3000",
   "dependencies": {
     "axios": "^0.17.1",
