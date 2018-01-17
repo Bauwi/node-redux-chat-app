@@ -29,3 +29,8 @@ export const startInitialLoad = (room, loadedStatus) => dispatch => {
     }
   }).then(() => dispatch(roomHasLoaded(true)));
 };
+
+export const updateUserList = userList => ({
+  type: "UPDATE_USER_LIST",
+  userList
+});

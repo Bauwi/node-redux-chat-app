@@ -31,6 +31,7 @@ export class ChatFooter extends Component {
       { from: "me", text: this.state.text },
       this.props.room
     );
+    this.setState(() => ({ text: "" }));
   };
 
   onTextChange = e => {

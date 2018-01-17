@@ -6,6 +6,7 @@ $blue: #1c88bf;
 $dark-blue: #364051;
 
 // Font Size
+$font-size-extra-large: 2.5rem;
 $font-size-large: 1.8rem;
 $font-size-small: 1.4rem;
 // Spacing
@@ -14,3 +15,9 @@ $m-size: 1.6rem;
 $l-size: 3.2rem;
 $xl-size: 4.8rem;
 $desktop-breakpoint: 45rem;
+
+// Header
+$header-height: 40px;
+
+// Chat
+$chat-height: calc(100vh - #{$header-height});

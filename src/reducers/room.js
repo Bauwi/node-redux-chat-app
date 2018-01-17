@@ -22,6 +22,11 @@ export default (state = roomDefaultState, action) => {
         ...state,
         isLoaded: action.isLoaded
       };
+    case "UPDATE_USER_LIST":
+      return {
+        ...state,
+        users: action.userList
+      };
     default:
       return state;
   }

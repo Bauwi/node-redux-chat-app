@@ -3,7 +3,10 @@ import { Router, Route, Switch, Link, NavLink } from "react-router-dom";
 import createHistory from "history/createBrowserHistory";
 import LoginPage from "../components/LoginPage";
 import DashboardPage from "../components/DashboardPage";
+import Chat from "../components/Chat";
 import NotFoundPage from "../components/NotFoundPage";
+import CreateAccountPage from "../components/CreateAccountPage";
+import AuthenticationTest from "../components/AuthenticationTest";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 
@@ -17,8 +20,11 @@ const AppRouter = () => (
   <Router history={history}>
     <div>
       <Switch>
-        <Route path="/" component={LoginPage} exact={true} />
-        <Route path="/dashboard" component={DashboardPage} />
+        <PublicRoute path="/" component={LoginPage} exact={true} />
+        <PublicRoute path="/create" component={CreateAccountPage} />
+        <PrivateRoute path="/dashboard" component={DashboardPage} exact />
+        <PrivateRoute path="/dashboard/:id" component={Chat} />
+
         <Route component={NotFoundPage} />
       </Switch>
     </div>

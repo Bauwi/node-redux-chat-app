@@ -5,11 +5,16 @@ const path = require("path");
 const http = require("http");
 const express = require("express");
 const socketIO = require("socket.io");
+const _ = require("lodash");
 
 const { generateMessage, generateLocationMessage } = require("./utils/message");
 const { isRealString } = require("./utils/validation.js");
 const { Users } = require("./utils/users");
 const { Room } = require("./models/room");
+const { User } = require("./models/user");
+const { authenticate } = require("./middleware/authenticate");
+
+const bodyParser = require("body-parser");
 
 const publicPath = path.join(__dirname, "../public");
 const port = process.env.PORT || 3000;
@@ -18,8 +23,39 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const users = new Users();
+app.use(bodyParser.json());
 
 app.use(express.static(publicPath));
+
+// Add headers
+app.use(function(req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+
+  // Request methods you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+
+  // Request headers you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+
+  res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  // Pass to next layer of middleware
+  next();
+});
+/****************************************************************/
+/*Chat sockets                                                  */
+/****************************************************************/
 
 io.on("connection", socket => {
   socket.on("join", (params, callback) => {
@@ -28,10 +64,13 @@ io.on("connection", socket => {
     // }
     socket.join(params.room);
     users.removeUser(socket.id);
+    console.log(params);
     users.addUser(socket.id, params.name, params.room);
 
-    io.to(params.room).emit("updateUserList", users.getUserList(params.room));
-
+    io
+      .to(params.room)
+      .emit("updateUserList", _.uniq(users.getUserList(params.room)));
+    console.log(users.getUserList(params.room));
     socket.emit(
       "newMessage",
       generateMessage("Admin", "Welcome to the chat app.")
@@ -48,21 +87,26 @@ io.on("connection", socket => {
     const roomItem = new Room({
       name: roomName
     });
-    Room.findOne({ name: roomName }, (err, room) => {
-      if (err) {
-        return console.log("Something went wrong.");
+    Room.findOne(
+      {
+        name: roomName
+      },
+      (err, room) => {
+        if (err) {
+          return console.log("Something went wrong.");
+        }
+        if (!room) {
+          roomItem.save().then(addedRoom => {
+            console.log(
+              `Room : ${addedRoom.name} room added. Its id is ${addedRoom._id}`
+            );
+            io.to(addedRoom.name).emit("roomReady", addedRoom);
+          });
+        } else {
+          io.to(room.name).emit("roomReady", room);
+        }
       }
-      if (!room) {
-        roomItem.save().then(addedRoom => {
-          console.log(
-            `Room : ${addedRoom.name} room added. Its id is ${addedRoom._id}`
-          );
-          io.to(addedRoom.name).emit("roomReady", addedRoom);
-        });
-      } else {
-        io.to(room.name).emit("roomReady", room);
-      }
-    });
+    );
   });
 
   socket.on("createMessage", (message, room, callback) => {
@@ -125,6 +169,66 @@ io.on("connection", socket => {
   });
 });
 
+/****************************************************************/
+/*Authentication                                                */
+/****************************************************************/
+
+/* Create Account*/
+
+app.post("/users", (req, res) => {
+  console.log("create user", req.body);
+  const user = new User(_.pick(req.body, ["email", "password", "username"]));
+  user
+    .save()
+    .then(() => {
+      return user.generateAuthToken();
+    })
+    .then(token => {
+      res.header("x-auth", token).send(user);
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
+
+/* Log in */
+
+app.post("/users/login", (req, res) => {
+  const body = _.pick(req.body, ["email", "password"]);
+
+  User.findByCredentials(body.email, body.password)
+    .then(user => {
+      user.generateAuthToken().then(token => {
+        console.log("token:", token, "User: ", user);
+        res.header("x-auth", token).send({
+          _id: user._id,
+          email: user.email,
+          username: user.username,
+          token
+        });
+      });
+    })
+    .catch(e => {
+      res.status(400).send(e);
+    });
+});
+
 server.listen(port, () => {
   console.log(`Started server at port ${port}`);
+});
+
+app.get("/users/me", authenticate, (req, res) => {
+  res.send(req.user);
+});
+
+app.delete("/users/me/token", authenticate, (req, res) => {
+  console.log("request", req);
+  req.user.removeToken(req.token).then(
+    () => {
+      res.status(200).send();
+    },
+    () => {
+      res.status(400).send();
+    }
+  );
 });

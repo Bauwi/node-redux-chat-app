@@ -4,6 +4,7 @@ import { withRouter } from "react-router-dom";
 import io from "socket.io-client";
 
 import ChatFooter from "./ChatFooter";
+import ChatSidebar from "./ChatSidebar";
 
 import { setNewMessage, newMessage, startInitialLoad } from "./../actions/room";
 import ChatMessageList from "./ChatMessageList";
@@ -24,7 +25,10 @@ export class Chat extends Component {
     console.dir(socket);
 
     socket.on("connect", () => {
-      const params = { name: "User", room: roomName };
+      const params = {
+        name: this.props.user.username || "User",
+        room: roomName
+      };
       socket.emit("join", params, () => {
         socket.emit("enterRoom", roomName);
       });
@@ -41,12 +45,11 @@ export class Chat extends Component {
   }
 
   render() {
+    const { room } = this.props;
+    console.log(room);
     return (
       <div className="chat">
-        <div className="chat__sidebar">
-          <h3>People</h3>
-          <div id="users" />
-        </div>
+        <ChatSidebar room={room} socket={socket} />
 
         <div className="chat__main">
           <ChatMessageList />
@@ -65,6 +68,7 @@ const mapDispatchToProps = dispatch => ({
 
 const mapStateToProps = state => ({
   room: state.room.room,
+  user: state.auth.user,
   isLoaded: state.room.isLoaded
 });
 

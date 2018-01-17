@@ -5,7 +5,7 @@
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue",
     Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
 }
 
 ul,
@@ -16,24 +16,26 @@ li {
 h3 {
   font-weight: 600;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: 4rem;
+  font-style: italic;
+  padding: 1rem 3rem;
 }
 
-button {
-  border: none;
-  background: #265f82;
-  color: white;
-  cursor: pointer;
-  padding: 10px;
-  transition: background 0.3s ease;
-}
+// button {
+//   border: none;
+//   background: #265f82;
+//   color: white;
+//   cursor: pointer;
+//   padding: 10px;
+//   transition: background 0.3s ease;
+// }
 
-button:hover {
-  border: none;
-  background: #1f4c69;
-  color: white;
-  padding: 10px;
-}
+// button:hover {
+//   border: none;
+//   background: #1f4c69;
+//   color: white;
+//   padding: 10px;
+// }
 
 button:disabled {
   cursor: default;
@@ -85,8 +87,8 @@ button:disabled {
   border: 1px solid #e1e1e1;
   border-radius: 5px;
   padding: 0px 20px;
-  margin: 20px;
-  width: 230px;
+  margin: 10vh auto 0 auto;
+  width: 300px;
 }
 
 .form-field {
@@ -115,7 +117,7 @@ button:disabled {
 .chat__sidebar {
   overflow-y: auto;
   width: 260px;
-  height: 100vh;
+  height: $chat-height;
   background: -moz-linear-gradient(
     125deg,
     rgba(39, 107, 130, 1) 0%,
@@ -171,7 +173,7 @@ button:disabled {
 .chat__main {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: $chat-height;
   width: 100%;
 }
 

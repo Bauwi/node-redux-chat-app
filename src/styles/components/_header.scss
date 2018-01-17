@@ -1,12 +1,13 @@
 .header {
   background: $dark-blue;
+  height: $header-height;
 }
 
 .header__content {
   align-items: center;
   display: flex;
   justify-content: space-between;
-  padding: $s-size 0;
+  padding: 0;
 }
 
 .header__title {
@@ -14,6 +15,6 @@
   text-decoration: none;
 
   h1 {
-    margin: 0
+    margin: 0;
   }
 }

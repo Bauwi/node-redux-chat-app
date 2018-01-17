@@ -6,7 +6,7 @@ export default ({ from, text, createdAt, url }) => {
     <li className="message">
       <div className="message__title">
         <h4>{from}</h4>
-        <span>{moment(createdAt).format("Do MMM, YYYY")}</span>
+        <span>{moment(createdAt).format("Do MMM, YYYY at hh:mm")}</span>
       </div>
       <div className="message__body">
         {text ? (

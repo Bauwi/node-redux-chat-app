@@ -1,8 +1,8 @@
 //PrivateRoute component is used to manage private only pages
-import React from 'react';
-import { connect } from 'react-redux';
-import { Route, Redirect } from 'react-router-dom';
-import Header from '../components/Header';
+import React from "react";
+import { connect } from "react-redux";
+import { Route, Redirect } from "react-router-dom";
+import Header from "../components/Header";
 
 export const PrivateRoute = ({
   isAuthenticated,
@@ -10,23 +10,24 @@ export const PrivateRoute = ({
   // get the rest of the props
   ...rest
 }) => (
-    <Route {...rest} component={(props) => (
+  <Route
+    {...rest}
+    component={props =>
       isAuthenticated ? (
         <div>
           <Header />
           <Component {...props} />
         </div>
       ) : (
-          <Redirect to="/" />
-        )
-    )} />
-  );
+        <Redirect to="/" />
+      )}
+  />
+);
 
-const mapStateToProps = (state) => {
- return {
-  isAuthenticated: !!state.auth.uid
- }
- 
+const mapStateToProps = state => {
+  return {
+    isAuthenticated: !!state.auth.user
+  };
 };
 
 export default connect(mapStateToProps)(PrivateRoute);

@@ -21,6 +21,10 @@ const UserSchema = new mongoose.Schema({
     required: true,
     minLength: 6
   },
+  username: {
+    type: String,
+    minLength: 1
+  },
   tokens: [
     {
       access: {
@@ -39,7 +43,7 @@ UserSchema.methods.toJSON = function() {
   const user = this;
   const userObject = user.toObject();
 
-  return _.pick(userObject, ["_id", "email"]);
+  return _.pick(userObject, ["_id", "email", "username"]);
 };
 
 UserSchema.methods.generateAuthToken = function() {
@@ -49,7 +53,7 @@ UserSchema.methods.generateAuthToken = function() {
     .sign({ _id: user._id.toHexString(), access }, process.env.JWT_SECRET)
     .toString();
 
-  user.tokens.push({ access, token });
+  user.tokens = [...user.tokens, { access, token }];
 
   return user.save().then(() => {
     return token;
@@ -74,7 +78,9 @@ UserSchema.statics.findByToken = function(token) {
 
   try {
     decoded = jwt.verify(token, process.env.JWT_SECRET);
+    console.log(decoded);
   } catch (e) {
+    console.log("Can not decode token.");
     return Promise.reject();
   }
 
@@ -82,6 +88,9 @@ UserSchema.statics.findByToken = function(token) {
     _id: decoded._id,
     "tokens.token": token,
     "tokens.access": "auth"
+  }).then(res => {
+    console.log("foundByToken", res);
+    return res;
   });
 };
 
