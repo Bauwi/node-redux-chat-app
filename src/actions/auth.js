@@ -1,5 +1,9 @@
 import axios from "axios";
 
+const API_PATH = "development"
+  ? "http://localhost:3000/"
+  : "https://react-node-chat-app.herokuapp.com/";
+
 const loginHasErrored = (bool, err) => ({
   type: "LOGIN_HAS_ERRORED",
   bool,
@@ -19,7 +23,7 @@ export const login = user => ({
 export const startLogin = credentials => dispatch => {
   dispatch(loginIsLoading(true));
   return axios
-    .post("http://localhost:3000/users/login", credentials)
+    .post(`${API_PATH}users/login`, credentials)
     .then(res => {
       dispatch(login(res.data));
       sessionStorage.setItem("user", JSON.stringify(res.data));
@@ -38,7 +42,7 @@ export const logout = () => ({
 export const startLogout = () => (dispatch, getState) => {
   console.log(getState().auth.user.token);
   return axios
-    .delete("http://localhost:3000/users/me/token", {
+    .delete(`${API_PATH}users/me/token`, {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(() => {
@@ -49,7 +53,7 @@ export const startLogout = () => (dispatch, getState) => {
 };
 
 export const startCreateAccount = credentials => dispatch => {
-  return axios.post(`http://localhost:3000/users`, credentials).then(() => {
+  return axios.post(`${API_PATH}users`, credentials).then(() => {
     dispatch(startLogin(credentials));
   });
 };
