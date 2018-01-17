@@ -22,7 +22,7 @@ export const startLogin = credentials => dispatch => {
     .post("http://localhost:3000/users/login", credentials)
     .then(res => {
       dispatch(login(res.data));
-      localStorage.setItem("user", JSON.stringify(res.data));
+      sessionStorage.setItem("user", JSON.stringify(res.data));
     })
     .then(() => dispatch(loginIsLoading(false)))
     .catch(e => {
@@ -42,7 +42,7 @@ export const startLogout = () => (dispatch, getState) => {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(() => {
-      localStorage.removeItem("user");
+      sessionStorage.removeItem("user");
       dispatch(logout());
     })
     .catch(e => console.log(e));

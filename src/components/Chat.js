@@ -46,7 +46,6 @@ export class Chat extends Component {
 
   render() {
     const { room } = this.props;
-    console.log(room);
     return (
       <div className="chat">
         <ChatSidebar room={room} socket={socket} />

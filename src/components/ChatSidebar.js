@@ -15,7 +15,6 @@ export class ChatSidebar extends Component {
 
   render() {
     const { room } = this.props;
-    this.props.userList && console.log(this.props.userList);
     return (
       <div className="chat__sidebar">
         <h3>{room ? `/${room.name}` : ""}</h3>

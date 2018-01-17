@@ -48,7 +48,8 @@ export class ChatFooter extends Component {
           latitude,
           longitude
         },
-        this.props.room
+        this.props.room,
+        this.props.username
       );
     });
   };
@@ -83,7 +84,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  room: state.room.room
+  room: state.room.room,
+  username: state.auth.user.username
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatFooter);

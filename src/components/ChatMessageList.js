@@ -1,23 +1,42 @@
 import React, { Component } from "react";
+import ReactDOM from "react-dom";
+
 import { connect } from "react-redux";
 
 import ChatMessageListItem from "./ChatMessageListItem";
 
 export class ChatMessageList extends Component {
+  componentDidMount() {
+    this.scrollToBottom();
+  }
+
+  componentDidUpdate() {
+    this.scrollToBottom();
+  }
+
+  scrollToBottom() {
+    this.el.scrollIntoView({ behaviour: "smooth" });
+  }
   renderMessages = () =>
     this.props.messages &&
-    this.props.messages.map(message => (
-      <ChatMessageListItem
-        key={message.key || message.createdAt}
-        {...message}
-      />
-    ));
+    this.props.messages.map(message => {
+      console.log(message.createdAt);
+      return <ChatMessageListItem key={message.createdAt} {...message} />;
+    });
 
   render() {
     return (
-      <ol id="messages" className="chat__messages">
-        {this.renderMessages()}
-      </ol>
+      <div>
+        <ol id="messages" className="chat__messages">
+          {this.renderMessages()}
+          <li
+            key="autoscroll"
+            ref={el => {
+              this.el = el;
+            }}
+          />
+        </ol>
+      </div>
     );
   }
 }

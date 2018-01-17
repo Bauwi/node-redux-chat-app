@@ -174,10 +174,14 @@ button:disabled {
   display: flex;
   flex-direction: column;
   height: $chat-height;
+  max-height: $chat-height;
+  min-height: $chat-height;
   width: 100%;
 }
 
 .chat__messages {
+  max-height: calc(100vh - 100px);
+  min-height: calc(100vh - 100px);
   flex-grow: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
@@ -187,7 +191,7 @@ button:disabled {
   background: #e6eaee;
   display: flex;
   padding: 10px;
-  /*height: 60px;*/
+  height: 60px;
   flex-shrink: 0;
 }
 
