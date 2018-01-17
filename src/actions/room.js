@@ -34,3 +34,7 @@ export const updateUserList = userList => ({
   type: "UPDATE_USER_LIST",
   userList
 });
+
+export const clearRoom = () => ({
+  type: "CLEAR_ROOM"
+});

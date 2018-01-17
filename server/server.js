@@ -27,39 +27,47 @@ app.use(bodyParser.json());
 
 app.use(express.static(publicPath));
 
-// Add headers
-// app.use(function(req, res, next) {
-//   // Website you wish to allow to connect
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
-
-//   // Request methods you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-//   );
-
-//   // Request headers you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "X-Requested-With,content-type"
-//   );
-
-//   res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
-
-//   // Set to true if you need the website to include cookies in the requests sent
-//   // to the API (e.g. in case you use sessions)
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-
-//   // Pass to next layer of middleware
-//   next();
-// });
 /****************************************************************/
-/*Chat sockets                                                  */
+/*Add Headers for developpment mode                             */
+/****************************************************************/
+
+app.use(function(req, res, next) {
+  // Website you wish to allow to connect
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+
+  // Request methods you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+  );
+
+  // Request headers you wish to allow
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "X-Requested-With,content-type"
+  );
+
+  res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+
+  // Set to true if you need the website to include cookies in the requests sent
+  // to the API (e.g. in case you use sessions)
+  res.setHeader("Access-Control-Allow-Credentials", true);
+
+  // Pass to next layer of middleware
+  next();
+});
+
+/****************************************************************/
+/*Serving App with Client-side routing                          */
 /****************************************************************/
 
 app.get("/*", function(req, res) {
   res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
+
+/****************************************************************/
+/*Chat sockets                                                  */
+/****************************************************************/
 
 io.on("connection", socket => {
   socket.on("join", (params, callback) => {
@@ -115,9 +123,6 @@ io.on("connection", socket => {
 
   socket.on("createMessage", (message, room, callback) => {
     const user = users.getUser(socket.id);
-    // const user = {
-    //   name: "some name"
-    // };
     return Room.findById(room._id)
       .then(resRoom => {
         if (resRoom && isRealString(message.text)) {
@@ -217,6 +222,8 @@ app.post("/users/login", (req, res) => {
 app.get("/users/me", authenticate, (req, res) => {
   res.send(req.user);
 });
+
+/* Remove token on log out */
 
 app.delete("/users/me/token", authenticate, (req, res) => {
   console.log("request", req);

@@ -16,10 +16,7 @@ const formikEnhancer = withFormik({
       .required("username is required."),
     password: Yup.string()
       .min(2, "C'mon, your password can not be that short")
-      .required("Password is required."),
-    room: Yup.string()
-      .min(2, "This is too short for a room name !")
-      .required("Room Name is required!")
+      .required("Password is required.")
   }),
 
   mapPropsToValues: ({ user }) => ({
@@ -29,7 +26,6 @@ const formikEnhancer = withFormik({
     payload,
     /*{ setSubmitting, startCreateAccount }*/ formikBag
   ) => {
-    alert(payload.room);
     formikBag.props.startCreateAccount({
       email: payload.email,
       password: payload.password,
@@ -130,27 +126,19 @@ const MyForm = props => {
         onChange={handleChange}
         onBlur={handleBlur}
       />
-      <TextInput
-        id="room"
-        type="room"
-        label="Room Name"
-        placeholder="ex: Gallifrey"
-        error={touched.room && errors.room}
-        value={values.room}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-      <button
-        type="button"
-        className="outline"
-        onClick={handleReset}
-        disabled={!dirty || isSubmitting}
-      >
-        Reset
-      </button>
-      <button type="submit" disabled={isSubmitting}>
-        Submit
-      </button>
+      <div className="button__wrapper ">
+        <button
+          type="button"
+          className="outline"
+          onClick={handleReset}
+          disabled={!dirty || isSubmitting}
+        >
+          Reset
+        </button>
+        <button type="submit" disabled={isSubmitting}>
+          Submit
+        </button>
+      </div>
     </form>
   );
 };

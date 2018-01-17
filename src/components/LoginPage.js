@@ -8,11 +8,11 @@ export class LoginPage extends Component {
   render() {
     return (
       <div className="centered-form__form">
-        <h3>Join a Chat</h3>
+        <h1 className="login-title">Login</h1>
         {this.props.loginError && (
           <p className="login-error">Sorry, we cannot find this user...</p>
         )}
-        <LoginForm user={{ email: "", password: "", room: "" }} />
+        <LoginForm user={{ email: "", password: "" }} />
         <div className="login-option">
           <Link to="/create">need an account?</Link>
         </div>

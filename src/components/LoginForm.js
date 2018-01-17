@@ -14,10 +14,7 @@ const formikEnhancer = withFormik({
       .required("Room Name is required!"),
     password: Yup.string()
       .min(2, "C'mon, your password can not be that short")
-      .required("Password is required."),
-    room: Yup.string()
-      .min(2, "This is too short for a room name !")
-      .required("Room Name is required!")
+      .required("Password is required.")
   }),
 
   mapPropsToValues: ({ user }) => ({
@@ -27,7 +24,6 @@ const formikEnhancer = withFormik({
     payload,
     /*{ setSubmitting, startCreateAccount }*/ formikBag
   ) => {
-    alert(payload.room);
     formikBag.props.startLogin({
       email: payload.email,
       password: payload.password
@@ -114,16 +110,6 @@ const MyForm = props => {
         placeholder="ex: Geronimo11th"
         error={touched.password && errors.password}
         value={values.password}
-        onChange={handleChange}
-        onBlur={handleBlur}
-      />
-      <TextInput
-        id="room"
-        type="text"
-        label="Room Name"
-        placeholder="ex: Gallifrey"
-        error={touched.room && errors.room}
-        value={values.room}
         onChange={handleChange}
         onBlur={handleBlur}
       />

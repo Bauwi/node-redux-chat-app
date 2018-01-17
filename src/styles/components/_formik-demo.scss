@@ -17,6 +17,27 @@ a {
   display: block;
   border-radius: 4px;
   border: 1px solid #ccc;
+  color: #007eff;
+  &::-webkit-input-placeholder {
+    /* Chrome/Opera/Safari */
+    // color: pink;
+    font-style: italic;
+  }
+  &::-moz-placeholder {
+    /* Firefox 19+ */
+    // color: pink;
+    font-style: italic;
+  }
+  &:-ms-input-placeholder {
+    /* IE 10+ */
+    // color: pink;
+    font-style: italic;
+  }
+  &:-moz-placeholder {
+    /* Firefox 18- */
+    // color: pink;
+    font-style: italic;
+  }
 }
 
 .text-input:focus {
@@ -70,7 +91,7 @@ button {
   padding: 6px 10px;
   border-style: none;
   border-radius: 5px;
-  background-color: #08c;
+  background-color: rgba(39, 107, 130, 1);
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
   font-size: 15px;
   font-weight: 500;
@@ -135,4 +156,9 @@ button.outline {
   display: flex;
   justify-content: center;
   padding: 2rem 0;
+}
+
+.login-title {
+  font-weight: 900;
+  text-align: center;
 }

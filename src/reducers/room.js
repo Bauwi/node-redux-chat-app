@@ -27,6 +27,8 @@ export default (state = roomDefaultState, action) => {
         ...state,
         users: action.userList
       };
+    case "CLEAR_ROOM":
+      return roomDefaultState;
     default:
       return state;
   }

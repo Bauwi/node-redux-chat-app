@@ -1,12 +1,13 @@
 import React from "react";
-import moment from "moment";
+
+import CalendarDate from "./CalendarDate";
 
 export default ({ from, text, createdAt, url }) => {
   return (
     <li className="message">
       <div className="message__title">
         <h4>{from}</h4>
-        <span>{moment(createdAt).format("Do MMM, YYYY at hh:mm")}</span>
+        <CalendarDate createdAt={createdAt} />
       </div>
       <div className="message__body">
         {text ? (

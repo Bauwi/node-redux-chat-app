@@ -6,7 +6,12 @@ import io from "socket.io-client";
 import ChatFooter from "./ChatFooter";
 import ChatSidebar from "./ChatSidebar";
 
-import { setNewMessage, newMessage, startInitialLoad } from "./../actions/room";
+import {
+  setNewMessage,
+  newMessage,
+  startInitialLoad,
+  clearRoom
+} from "./../actions/room";
 import ChatMessageList from "./ChatMessageList";
 
 let socket;
@@ -41,7 +46,7 @@ export class Chat extends Component {
 
   componentWillUnmount() {
     socket.disconnect();
-    alert("Disconnecting Socket as component will unmount");
+    this.props.clearRoom();
   }
 
   render() {
@@ -62,7 +67,8 @@ export class Chat extends Component {
 
 const mapDispatchToProps = dispatch => ({
   startInitialLoad: (room, loadedStatus) =>
-    dispatch(startInitialLoad(room, loadedStatus))
+    dispatch(startInitialLoad(room, loadedStatus)),
+  clearRoom: () => dispatch(clearRoom())
 });
 
 const mapStateToProps = state => ({
