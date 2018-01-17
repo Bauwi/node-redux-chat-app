@@ -15,8 +15,6 @@
     "start": "node server/server.js",
     "heroku-postbuild": "npm run build:prod"
   },
-
-  "proxy": "http://localhost:3000",
   "dependencies": {
     "axios": "^0.17.1",
     "babel-cli": "6.24.1",
