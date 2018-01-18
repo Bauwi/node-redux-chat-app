@@ -1,9 +1,8 @@
 import axios from "axios";
 
-const API_PATH =
-  process.env.NODE_ENV === "production"
-    ? "https://react-node-chat-app.herokuapp.com/"
-    : "http://localhost:3000/";
+// const API_PATH = process.env.NODE_ENV === "production"
+//   ? "https://react-node-chat-app.herokuapp.com/"
+//   : "http://localhost:3000/";
 
 const loginHasErrored = (bool, err) => ({
   type: "LOGIN_HAS_ERRORED",
@@ -22,7 +21,7 @@ export const login = user => ({
 });
 
 export const startLogin = credentials => dispatch => {
-  console.log(API_PATH);
+  // console.log(API_PATH);
   dispatch(loginIsLoading(true));
   return axios
     .post("https://react-node-chat-app.herokuapp.com/users/login", credentials)
@@ -42,7 +41,7 @@ export const logout = () => ({
 });
 
 export const startLogout = () => (dispatch, getState) => {
-  console.log(API_PATH);
+  // console.log(API_PATH);
   return axios
     .delete("https://react-node-chat-app.herokuapp.com/users/me/token", {
       headers: { "x-auth": getState().auth.user.token }
