@@ -25,7 +25,7 @@ export const startLogin = credentials => dispatch => {
   console.log(API_PATH);
   dispatch(loginIsLoading(true));
   return axios
-    .post("http://localhost:3000/users/login", credentials)
+    .post("https://react-node-chat-app.herokuapp.com/users/login", credentials)
     .then(res => {
       dispatch(login(res.data));
       sessionStorage.setItem("user", JSON.stringify(res.data));
@@ -44,7 +44,7 @@ export const logout = () => ({
 export const startLogout = () => (dispatch, getState) => {
   console.log(API_PATH);
   return axios
-    .delete("http://localhost:3000/users/me/token", {
+    .delete("https://react-node-chat-app.herokuapp.com/users/me/token", {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(() => {
@@ -55,7 +55,9 @@ export const startLogout = () => (dispatch, getState) => {
 };
 
 export const startCreateAccount = credentials => dispatch => {
-  return axios.post(`http://localhost:3000/users`, credentials).then(() => {
-    dispatch(startLogin(credentials));
-  });
+  return axios
+    .post(`https://react-node-chat-app.herokuapp.com/users`, credentials)
+    .then(() => {
+      dispatch(startLogin(credentials));
+    });
 };
