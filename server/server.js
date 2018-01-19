@@ -6,6 +6,7 @@ const http = require("http");
 const express = require("express");
 const socketIO = require("socket.io");
 const _ = require("lodash");
+const moment = require("moment");
 
 const { generateMessage, generateLocationMessage } = require("./utils/message");
 const { isRealString } = require("./utils/validation.js");
@@ -33,7 +34,7 @@ app.use(express.static(publicPath));
 
 app.use(function(req, res, next) {
   // Website you wish to allow to connect
-  // res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -50,14 +51,6 @@ app.use(function(req, res, next) {
   res.setHeader("Access-Control-Allow-Credentials", true);
   // Pass to next layer of middleware
   next();
-});
-
-/****************************************************************/
-/*Serving App with Client-side routing                          */
-/****************************************************************/
-
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
 /****************************************************************/
@@ -90,9 +83,10 @@ io.on("connection", socket => {
     callback();
   });
 
-  socket.on("enterRoom", roomName => {
+  socket.on("enterRoom", (roomName, user) => {
     const roomItem = new Room({
-      name: roomName
+      name: roomName,
+      createdAt: moment().valueOf()
     });
     Room.findOne(
       {
@@ -107,10 +101,12 @@ io.on("connection", socket => {
             console.log(
               `Room : ${addedRoom.name} room added. Its id is ${addedRoom._id}`
             );
-            io.to(addedRoom.name).emit("roomReady", addedRoom);
+            socket.emit("roomReady", addedRoom);
           });
         } else {
-          io.to(room.name).emit("roomReady", room);
+          socket.emit("roomReady", room);
+          console.log("user", user);
+          room.addUser(user);
         }
       }
     );
@@ -214,6 +210,27 @@ app.post("/users/login", (req, res) => {
     });
 });
 
+/* Get the rooms with the most messages */
+
+app.get("/rooms/top5", authenticate, (req, res) => {
+  Room.find({})
+    .sort({ messagesCount: -1 })
+    .limit(5)
+    .then(top5 => {
+      res.status(200).send(top5);
+    });
+});
+
+/* Get the last room created */
+app.get("/rooms/last", authenticate, (req, res) => {
+  Room.find({})
+    .sort({ createdAt: -1 })
+    .limit(5)
+    .then(last => {
+      res.status(200).send(last);
+    });
+});
+
 app.get("/users/me", authenticate, (req, res) => {
   res.send(req.user);
 });
@@ -230,6 +247,14 @@ app.delete("/users/me/token", authenticate, (req, res) => {
       res.status(400).send();
     }
   );
+});
+
+/****************************************************************/
+/*Serving App with Client-side routing                          */
+/****************************************************************/
+
+app.get("/*", function(req, res) {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
 });
 
 server.listen(port, () => {

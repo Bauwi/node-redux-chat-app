@@ -4,21 +4,33 @@
 
 html {
   font-size: 62.5%;
-  background: #c9d6ff; /* fallback for old browsers */
+  height: 100%;
+  // background: #c9d6ff; /* fallback for old browsers */
+  // background: -webkit-linear-gradient(
+  //   to right,
+  //   #e2e2e2,
+  //   #c9d6ff
+  // ); /* Chrome 10-25, Safari 5.1-6 */
+  // background: linear-gradient(
+  //   to right,
+  //   #e2e2e2,
+  //   #c9d6ff
+  // ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  background: #070000; /* fallback for old browsers */
   background: -webkit-linear-gradient(
-    to right,
-    #e2e2e2,
-    #c9d6ff
+    to bottom,
+    #4c0001,
+    #070000
   ); /* Chrome 10-25, Safari 5.1-6 */
   background: linear-gradient(
-    to right,
-    #e2e2e2,
-    #c9d6ff
+    to bottom,
+    #4c0001,
+    #070000
   ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 body {
-  color: $dark-grey;
+  color: rgba(200, 200, 200, 1);
   font-family: Helvetica, Arial, sans-serif;
   font-size: $m-size;
   line-height: 1.6;

@@ -35,10 +35,11 @@ export class Chat extends Component {
         room: roomName
       };
       socket.emit("join", params, () => {
-        socket.emit("enterRoom", roomName);
+        socket.emit("enterRoom", roomName, this.props.user);
       });
     });
 
+    // emitted to the current user only
     socket.on("roomReady", res => {
       this.props.startInitialLoad(res, this.props.isLoaded);
     });
@@ -72,7 +73,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  room: state.room.room,
+  room: state.room,
   user: state.auth.user,
   isLoaded: state.room.isLoaded
 });

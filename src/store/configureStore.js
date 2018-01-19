@@ -3,6 +3,7 @@ import thunk from "redux-thunk";
 
 import authReducer from "../reducers/auth";
 import roomReducer from "../reducers/room";
+import lobbyReducer from "../reducers/lobby";
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
@@ -15,7 +16,8 @@ export default () => {
   const store = createStore(
     combineReducers({
       auth: authReducer,
-      room: roomReducer
+      room: roomReducer,
+      lobby: lobbyReducer
     }),
     composeEnhancers(applyMiddleware(thunk))
   );

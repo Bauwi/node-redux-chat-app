@@ -11,13 +11,14 @@ a {
 }
 
 .text-input {
+  background: rgba(150, 150, 150, 0.3);
   padding: 0.5rem;
   font-size: 16px;
   width: 100%;
   display: block;
   border-radius: 4px;
   border: 1px solid #ccc;
-  color: #007eff;
+  color: rgba(255, 210, 31, 0.5);
   &::-webkit-input-placeholder {
     /* Chrome/Opera/Safari */
     // color: pink;
@@ -41,7 +42,8 @@ a {
 }
 
 .text-input:focus {
-  border-color: #007eff;
+  border-color: rgba(255, 210, 31, 1);
+
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075),
     0 0 0 3px rgba(0, 126, 255, 0.1);
   outline: none;
@@ -89,13 +91,13 @@ button {
   max-width: 150px;
   margin: 0;
   padding: 6px 10px;
-  border-style: none;
+  border: 1px solid rgba(255, 210, 31, 1);
   border-radius: 5px;
-  background-color: rgba(39, 107, 130, 1);
+  background-color: rgba(255, 255, 255, 0.2);
   box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
   font-size: 15px;
   font-weight: 500;
-  color: #fff;
+  color: rgba(255, 210, 31, 1);
   cursor: pointer;
   outline: none;
   -webkit-appearance: none;
@@ -159,6 +161,7 @@ button.outline {
 }
 
 .login-title {
+  padding-top: 2rem;
   font-weight: 900;
   text-align: center;
 }

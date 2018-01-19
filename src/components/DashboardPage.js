@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { withRouter } from "react-router-dom";
+import DashboardSidebar from "./DashboardSidebar";
 
 export class DashboardPage extends Component {
   state = {
@@ -20,10 +21,7 @@ export class DashboardPage extends Component {
   render() {
     return (
       <div className="dashboard">
-        <div className="dashboard__sidebar">
-          <h3>List</h3>
-          <div id="users" />
-        </div>
+        <DashboardSidebar />
 
         <div className="dashboard__main">
           <div className="dashboard__main__wrapper">

@@ -30,9 +30,17 @@ const RoomSchema = new mongoose.Schema({
       }
     }
   ],
+  createdAt: {
+    type: Number,
+    required: true
+  },
+  messagesCount: {
+    type: Number,
+    default: 0
+  },
   users: [
     {
-      name: String
+      username: String
     }
   ]
 });
@@ -40,7 +48,9 @@ const RoomSchema = new mongoose.Schema({
 RoomSchema.methods.addMessage = function(message) {
   this.messages = [...this.messages, message];
 
-  return this.save().then(() => message);
+  return this.save()
+    .then(() => this.update({ $inc: { messagesCount: 1 } }))
+    .then(() => message);
 };
 
 RoomSchema.methods.getUsers = function() {
@@ -50,8 +60,9 @@ RoomSchema.methods.getMessages = function() {
   return this.messages;
 };
 RoomSchema.methods.addUser = function(user) {
-  let { users } = this;
-  users = [...users, user];
+  console.log("addUser fired");
+  this.users = [...this.users, user];
+  console.log(this.users);
 
   return this.save().then(something => something);
 };

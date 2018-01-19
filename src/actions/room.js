@@ -1,4 +1,4 @@
-// const { Room } = require("./../../server/models/room");
+import axios from "axios";
 
 export const newMessage = message => ({
   type: "NEW_MESSAGE",
@@ -22,6 +22,7 @@ const roomHasLoaded = bool => ({
 });
 
 export const startInitialLoad = (room, loadedStatus) => dispatch => {
+  console.log("room", room);
   dispatch(roomHasLoaded(false));
   return new Promise((resolve, reject) => {
     if (!loadedStatus) {
