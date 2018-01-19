@@ -24,7 +24,6 @@ export const login = user => ({
 });
 
 export const startLogin = credentials => dispatch => {
-  console.log(API_PATH);
   dispatch(loginIsLoading(true));
   return axios
     .post("http://localhost:3000/users/login", credentials)
@@ -44,7 +43,6 @@ export const logout = () => ({
 });
 
 export const startLogout = () => (dispatch, getState) => {
-  console.log(API_PATH);
   return axios
     .delete("http://localhost:3000/users/me/token", {
       headers: { "x-auth": getState().auth.user.token }

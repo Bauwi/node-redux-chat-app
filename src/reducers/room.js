@@ -13,8 +13,7 @@ export default (state = roomDefaultState, action) => {
       };
     case "INITIAL_LOAD":
       return {
-        ...state,
-        room: action.room,
+        ...action.room,
         messages: [...state.messages, ...action.room.messages]
       };
     case "ROOM_HAS_LOADED":
@@ -22,10 +21,15 @@ export default (state = roomDefaultState, action) => {
         ...state,
         isLoaded: action.isLoaded
       };
-    case "UPDATE_USER_LIST":
+    case "NEW_USER_IN_ROOM":
       return {
         ...state,
-        users: action.userList
+        users: [...state.users, action.user]
+      };
+    case "USER_LEFT_ROOM":
+      return {
+        ...state,
+        users: state.users.filter(user => user.username !== action.username)
       };
     case "CLEAR_ROOM":
       return roomDefaultState;

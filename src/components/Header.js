@@ -28,11 +28,8 @@ const mapDispatchToProps = dispatch => ({
   startLogout: () => dispatch(startLogout())
 });
 
-const mapStateToProps = state => {
-  console.log(state.room.room);
-  return {
-    room: state.room.room ? state.room.room.name : ""
-  };
-};
+const mapStateToProps = state => ({
+  room: state.room ? state.room.name : ""
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header);

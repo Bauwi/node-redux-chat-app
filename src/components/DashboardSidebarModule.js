@@ -5,17 +5,16 @@ export default class DashboardSidebarModule extends Component {
   renderList = () =>
     this.props.rooms.map(room => {
       return (
-        <Link to={`/dashboard/${room.name}`}>
-          <li key={room._id}>
+        <li key={room._id}>
+          <Link to={`/dashboard/${room.name}`}>
             <p>/ {room.name}</p>
-            <p>{room.messagesCount}</p>
-          </li>
-        </Link>
+            <p>{room.users.length}</p>
+          </Link>
+        </li>
       );
     });
 
   render() {
-    console.log(this.props.rooms);
     return (
       <div>
         <div className="dashboard__sidebar__category">

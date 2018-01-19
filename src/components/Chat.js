@@ -10,7 +10,9 @@ import {
   setNewMessage,
   newMessage,
   startInitialLoad,
-  clearRoom
+  clearRoom,
+  newUserInRoom,
+  userLeftRoom
 } from "./../actions/room";
 import ChatMessageList from "./ChatMessageList";
 
@@ -27,7 +29,6 @@ export class Chat extends Component {
       ""
     );
     socket = io.connect("http://localhost:3000");
-    console.dir(socket);
 
     socket.on("connect", () => {
       const params = {
@@ -36,6 +37,21 @@ export class Chat extends Component {
       };
       socket.emit("join", params, () => {
         socket.emit("enterRoom", roomName, this.props.user);
+      });
+
+      socket.on("newUserInRoom", user => {
+        const alreadyInList =
+          this.props.room.users.filter(
+            userInState => userInState._id === user._id
+          ).length !== 0;
+
+        if (!alreadyInList) {
+          this.props.newUserInRoom(user);
+        }
+      });
+
+      socket.on("userLeftRoom", user => {
+        this.props.userLeftRoom(user);
       });
     });
 
@@ -69,7 +85,9 @@ export class Chat extends Component {
 const mapDispatchToProps = dispatch => ({
   startInitialLoad: (room, loadedStatus) =>
     dispatch(startInitialLoad(room, loadedStatus)),
-  clearRoom: () => dispatch(clearRoom())
+  clearRoom: () => dispatch(clearRoom()),
+  newUserInRoom: user => dispatch(newUserInRoom(user)),
+  userLeftRoom: username => dispatch(userLeftRoom(username))
 });
 
 const mapStateToProps = state => ({

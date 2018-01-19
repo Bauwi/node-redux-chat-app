@@ -64,13 +64,8 @@ io.on("connection", socket => {
     // }
     socket.join(params.room);
     users.removeUser(socket.id);
-    console.log(params);
     users.addUser(socket.id, params.name, params.room);
 
-    io
-      .to(params.room)
-      .emit("updateUserList", _.uniq(users.getUserList(params.room)));
-    console.log(users.getUserList(params.room));
     socket.emit(
       "newMessage",
       generateMessage("Admin", "Welcome to the chat app.")
@@ -94,19 +89,23 @@ io.on("connection", socket => {
       },
       (err, room) => {
         if (err) {
-          return console.log("Something went wrong.");
+          return err;
         }
         if (!room) {
           roomItem.save().then(addedRoom => {
-            console.log(
-              `Room : ${addedRoom.name} room added. Its id is ${addedRoom._id}`
-            );
             socket.emit("roomReady", addedRoom);
+            addedRoom.addUser({
+              ...user,
+              socketId: socket.id,
+              lastRoom: addedRoom._id
+            });
+            io.to(roomName).emit("newUserInRoom", user);
           });
         } else {
           socket.emit("roomReady", room);
-          console.log("user", user);
-          room.addUser(user);
+
+          room.addUser({ ...user, socketId: socket.id, lastRoom: room._id });
+          io.to(roomName).emit("newUserInRoom", user);
         }
       }
     );
@@ -133,7 +132,6 @@ io.on("connection", socket => {
   });
 
   socket.on("createLocationMessage", (coords, room, username) => {
-    console.log(room);
     return Room.findById(room._id)
       .then(resRoom => {
         if (resRoom && coords.latitude && coords.longitude) {
@@ -155,14 +153,22 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnect", () => {
-    const user = users.removeUser(socket.id);
+    return Room.findOne({ users: { $elemMatch: { socketId: socket.id } } })
+      .then(resRoom => {
+        const user = resRoom.users.filter(
+          user => user.socketId === socket.id
+        )[0];
+        io.to(resRoom.name).emit("userLeftRoom", user.username);
+        io
+          .to(resRoom.name)
+          .emit(
+            "newMessage",
+            generateMessage("Admin", `${user.username} has left.`)
+          );
 
-    if (user) {
-      io.to(user.room).emit("updateUserList", users.getUserList(user.room));
-      io
-        .to(user.room)
-        .emit("newMessage", generateMessage("Admin", `${user.name} has left.`));
-    }
+        return resRoom.removeUser(user._id);
+      })
+      .catch(e => console.log(e));
   });
 });
 
@@ -173,7 +179,6 @@ io.on("connection", socket => {
 /* Create Account*/
 
 app.post("/users", (req, res) => {
-  console.log("create user", req.body);
   const user = new User(_.pick(req.body, ["email", "password", "username"]));
   user
     .save()
@@ -196,7 +201,6 @@ app.post("/users/login", (req, res) => {
   User.findByCredentials(body.email, body.password)
     .then(user => {
       user.generateAuthToken().then(token => {
-        console.log("token:", token, "User: ", user);
         res.header("x-auth", token).send({
           _id: user._id,
           email: user.email,
@@ -238,7 +242,6 @@ app.get("/users/me", authenticate, (req, res) => {
 /* Remove token on log out */
 
 app.delete("/users/me/token", authenticate, (req, res) => {
-  console.log("request", req);
   req.user.removeToken(req.token).then(
     () => {
       res.status(200).send();

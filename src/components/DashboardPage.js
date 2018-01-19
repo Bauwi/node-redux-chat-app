@@ -9,7 +9,7 @@ export class DashboardPage extends Component {
 
   onRoomNameSubmit = e => {
     e.preventDefault();
-    console.log("submitted");
+
     this.props.history.push(`/dashboard/${this.state.roomName}`);
   };
 

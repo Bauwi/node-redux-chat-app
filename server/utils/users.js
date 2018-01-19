@@ -39,4 +39,3 @@ module.exports = { Users };
 
 // const me = new Person("Jen", 25);
 // const description = me.getUserDescription();
-// console.log(description);

@@ -17,7 +17,6 @@ export class DashboardSidebar extends Component {
   }
 
   render() {
-    console.log(this.props.top5);
     return (
       <div className="dashboard__sidebar">
         <DashboardSidebarModule rooms={this.props.top5} category="Popular" />

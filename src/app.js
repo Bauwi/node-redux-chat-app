@@ -14,7 +14,7 @@ import "react-dates/lib/css/_datepicker.css";
 const store = configureStore();
 
 const user = JSON.parse(sessionStorage.getItem("user"));
-console.log("user from sessionStorage", user);
+
 if (user && user.token) {
   store.dispatch(login(user));
 }

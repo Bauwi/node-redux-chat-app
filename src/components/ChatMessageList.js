@@ -20,7 +20,6 @@ export class ChatMessageList extends Component {
   renderMessages = () =>
     this.props.messages &&
     this.props.messages.map(message => {
-      console.log(message.createdAt);
       return <ChatMessageListItem key={message.createdAt} {...message} />;
     });
 

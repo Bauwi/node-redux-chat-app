@@ -23,22 +23,25 @@
   list-style-type: none;
   // border: 1px solid #e1e1e1;
   margin-bottom: 2rem;
-  a {
-    text-decoration: none !important;
-  }
 }
 
 .dashboard__sidebar li {
   // background: #e6eaee;
   // border: 1px solid #e1e1e1;
-  color: rgb(201, 201, 201);
-  display: flex;
+
   // font-style: italic;
   font-weight: 900;
-  justify-content: space-between;
   // border-radius: 5px;
   padding: 0px 10px;
   margin: 0px 10px;
+}
+
+.dashboard__sidebar a {
+  text-decoration: none !important;
+  color: rgb(201, 201, 201);
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   &:hover {
     color: rgba(255, 255, 255, 1);
   }

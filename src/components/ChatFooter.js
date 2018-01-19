@@ -19,7 +19,6 @@ export class ChatFooter extends Component {
     });
 
     this.props.socket.on("newLocationMessage", message => {
-      console.log(message);
       this.props.newMessage(message);
     });
   }
@@ -84,7 +83,7 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  room: state.room.room,
+  room: state.room,
   username: state.auth.user.username
 });
 

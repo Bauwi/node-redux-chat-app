@@ -40,7 +40,9 @@ const RoomSchema = new mongoose.Schema({
   },
   users: [
     {
-      username: String
+      username: { type: String },
+      socketId: { type: String },
+      lastRoom: { type: String }
     }
   ]
 });
@@ -60,9 +62,7 @@ RoomSchema.methods.getMessages = function() {
   return this.messages;
 };
 RoomSchema.methods.addUser = function(user) {
-  console.log("addUser fired");
   this.users = [...this.users, user];
-  console.log(this.users);
 
   return this.save().then(something => something);
 };
@@ -70,9 +70,7 @@ RoomSchema.methods.addUser = function(user) {
 RoomSchema.methods.removeUser = function(id) {
   return this.update({
     $pull: {
-      users: {
-        _id: id
-      }
+      users: { _id: id }
     }
   });
 };

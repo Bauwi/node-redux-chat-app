@@ -8,9 +8,9 @@ import { updateUserList } from "./../actions/room";
 export class ChatSidebar extends Component {
   constructor(props) {
     super(props);
-    this.props.socket.on("updateUserList", res => {
-      this.props.updateUserList(res);
-    });
+    // this.props.socket.on("updateUserList", res => {
+    //   this.props.updateUserList(res);
+    // });
   }
 
   render() {

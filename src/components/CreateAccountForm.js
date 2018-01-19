@@ -32,7 +32,6 @@ const formikEnhancer = withFormik({
       username: payload.username
     });
     formikBag.setSubmitting(false);
-    console.log(formikBag);
   },
   displayName: "MyForm"
 });

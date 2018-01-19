@@ -6,9 +6,7 @@ export const newMessage = message => ({
 });
 
 export const setNewMessage = (socket, message, roomName) => dispatch => {
-  socket.emit("createMessage", message, roomName, function() {
-    console.log("done");
-  });
+  socket.emit("createMessage", message, roomName, function() {});
 };
 
 export const initialLoad = room => ({
@@ -22,7 +20,6 @@ const roomHasLoaded = bool => ({
 });
 
 export const startInitialLoad = (room, loadedStatus) => dispatch => {
-  console.log("room", room);
   dispatch(roomHasLoaded(false));
   return new Promise((resolve, reject) => {
     if (!loadedStatus) {
@@ -34,6 +31,16 @@ export const startInitialLoad = (room, loadedStatus) => dispatch => {
 export const updateUserList = userList => ({
   type: "UPDATE_USER_LIST",
   userList
+});
+
+export const newUserInRoom = user => ({
+  type: "NEW_USER_IN_ROOM",
+  user
+});
+
+export const userLeftRoom = username => ({
+  type: "USER_LEFT_ROOM",
+  username
 });
 
 export const clearRoom = () => ({
