@@ -4,8 +4,8 @@ import { startSetRoomsTop5 } from "./lobby";
 
 const API_PATH =
   process.env.NODE_ENV === "production"
-    ? "https://react-node-chat-app.herokuapp.com/"
-    : "http://localhost:3000/";
+    ? "https://react-node-chat-app.herokuapp.com"
+    : "http://localhost:3000";
 
 const loginHasErrored = (bool, err) => ({
   type: "LOGIN_HAS_ERRORED",
@@ -26,7 +26,7 @@ export const login = user => ({
 export const startLogin = credentials => dispatch => {
   dispatch(loginIsLoading(true));
   return axios
-    .post("http://localhost:3000/users/login", credentials)
+    .post(`${API_PATH}/users/login`, credentials)
     .then(res => {
       dispatch(login(res.data));
       sessionStorage.setItem("user", JSON.stringify(res.data));
@@ -44,7 +44,7 @@ export const logout = () => ({
 
 export const startLogout = () => (dispatch, getState) => {
   return axios
-    .delete("http://localhost:3000/users/me/token", {
+    .delete(`${API_PATH}/users/me/token`, {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(() => {
@@ -55,7 +55,7 @@ export const startLogout = () => (dispatch, getState) => {
 };
 
 export const startCreateAccount = credentials => dispatch => {
-  return axios.post(`http://localhost:3000/users`, credentials).then(() => {
+  return axios.post(`${API_PATH}/users`, credentials).then(() => {
     dispatch(startLogin(credentials));
   });
 };

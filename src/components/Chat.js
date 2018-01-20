@@ -6,6 +6,11 @@ import io from "socket.io-client";
 import ChatFooter from "./ChatFooter";
 import ChatSidebar from "./ChatSidebar";
 
+const ROOT_URL =
+  process.env.NODE_ENV === "production"
+    ? "https://react-node-chat-app.herokuapp.com"
+    : "http://localhost:3000";
+
 import {
   setNewMessage,
   newMessage,
@@ -28,7 +33,7 @@ export class Chat extends Component {
       /\/dashboard\//,
       ""
     );
-    socket = io.connect("http://localhost:3000");
+    socket = io.connect(`${ROOT_URL}`);
 
     socket.on("connect", () => {
       const params = {

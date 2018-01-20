@@ -1,5 +1,10 @@
 import axios from "axios";
 
+const API_PATH =
+  process.env.NODE_ENV === "production"
+    ? "https://react-node-chat-app.herokuapp.com"
+    : "http://localhost:3000";
+
 export const setRoomsTop5 = topRooms => ({
   type: "SET_TOP_ROOMS",
   topRooms
@@ -7,7 +12,7 @@ export const setRoomsTop5 = topRooms => ({
 
 export const startSetRoomsTop5 = () => (dispatch, getState) => {
   return axios
-    .get("http://localhost:3000/rooms/top5", {
+    .get(`${API_PATH}/rooms/top5`, {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(res => {
@@ -22,7 +27,7 @@ const setLastRooms = lastRooms => ({
 
 export const startSetLastRooms = () => (dispatch, getState) =>
   axios
-    .get("http://localhost:3000/rooms/last", {
+    .get(`${API_PATH}/rooms/last`, {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(res => {
@@ -36,7 +41,7 @@ const setCrowdedRooms = crowdedRooms => ({
 
 export const startSetCrowdedRooms = () => (dispatch, getState) =>
   axios
-    .get("http://localhost:3000/rooms/crowded", {
+    .get(`${API_PATH}/rooms/crowded`, {
       headers: { "x-auth": getState().auth.user.token }
     })
     .then(res => {
