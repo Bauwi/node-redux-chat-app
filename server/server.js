@@ -34,7 +34,10 @@ app.use(express.static(publicPath));
 
 app.use(function(req, res, next) {
   // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "https://react-node-chat-app.herokuapp.com"
+  );
 
   // Request methods you wish to allow
   res.setHeader(
@@ -211,6 +214,7 @@ app.post("/users", (req, res) => {
       return user.generateAuthToken();
     })
     .then(token => {
+      console.log(token);
       res.header("x-auth", token).send(user);
     })
     .catch(e => {
