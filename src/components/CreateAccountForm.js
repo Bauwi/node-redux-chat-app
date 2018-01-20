@@ -22,10 +22,7 @@ const formikEnhancer = withFormik({
   mapPropsToValues: ({ user }) => ({
     ...user
   }),
-  handleSubmit: (
-    payload,
-    /*{ setSubmitting, startCreateAccount }*/ formikBag
-  ) => {
+  handleSubmit: (payload, formikBag) => {
     formikBag.props.startCreateAccount({
       email: payload.email,
       password: payload.password,
