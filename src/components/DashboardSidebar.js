@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import DashboardSidebarModule from "./DashboardSidebarModule";
+import UserInfos from "./UserInfos";
 
 import {
   startSetRoomsTop5,
@@ -25,13 +26,19 @@ export class DashboardSidebar extends Component {
   render() {
     return (
       <div className="dashboard__sidebar">
-        <DashboardSidebarModule
-          rooms={this.props.crowdedRooms}
-          category="Crowded"
-        />
+        <div>
+          <DashboardSidebarModule
+            rooms={this.props.crowdedRooms}
+            category="Crowded"
+          />
 
-        <DashboardSidebarModule rooms={this.props.top5} category="Popular" />
-        <DashboardSidebarModule rooms={this.props.lastRooms} category="Last" />
+          <DashboardSidebarModule rooms={this.props.top5} category="Popular" />
+          <DashboardSidebarModule
+            rooms={this.props.lastRooms}
+            category="Last"
+          />
+        </div>
+        <UserInfos user={this.props.user} />
       </div>
     );
   }
@@ -46,7 +53,8 @@ const mapDispatchToProps = dispatch => ({
 const mapStateToProps = state => ({
   crowdedRooms: state.lobby.crowdedRooms,
   top5: state.lobby.top5,
-  lastRooms: state.lobby.lastRooms
+  lastRooms: state.lobby.lastRooms,
+  user: state.auth.user
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(DashboardSidebar);

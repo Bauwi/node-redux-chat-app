@@ -1,0 +1,13 @@
+.user-infos {
+  border-top: 1px solid rgba(255, 210, 31, 0.5);
+  margin: 10px 20px;
+  padding: 10px;
+  // text-align: center;
+
+  * {
+    font-size: $font-size-medium;
+  }
+  i {
+    margin-right: 1rem;
+  }
+}

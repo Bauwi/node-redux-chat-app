@@ -5,6 +5,7 @@ import ChatSidebarUserlist from "./ChatSidebarUserlist";
 import ChatSidebarStats from "./ChatSidebarStats";
 
 import { updateUserList } from "./../actions/room";
+import UserInfos from "./UserInfos";
 
 export class ChatSidebar extends Component {
   constructor(props) {
@@ -18,8 +19,11 @@ export class ChatSidebar extends Component {
     const { room } = this.props;
     return (
       <div className="chat__sidebar">
-        <ChatSidebarStats />
-        <ChatSidebarUserlist userList={this.props.userList} />
+        <div>
+          <ChatSidebarStats />
+          <ChatSidebarUserlist userList={this.props.userList} />
+        </div>
+        <UserInfos user={this.props.user} />
       </div>
     );
   }
@@ -30,7 +34,8 @@ const mapDispatchToProps = dispatch => ({
 });
 
 const mapStateToProps = state => ({
-  userList: state.room.users
+  userList: state.room.users,
+  user: state.auth.user
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ChatSidebar);

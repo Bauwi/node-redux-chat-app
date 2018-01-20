@@ -6,7 +6,7 @@ export default ({ from, text, createdAt, url }) => {
   return (
     <li className="message">
       <div className="message__title">
-        <h4>{from}</h4>
+        <h4 className={from === "Admin" && "admin"}>{from}</h4>
         <CalendarDate createdAt={createdAt} />
       </div>
       <div className="message__body">
