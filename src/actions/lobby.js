@@ -28,3 +28,17 @@ export const startSetLastRooms = () => (dispatch, getState) =>
     .then(res => {
       dispatch(setLastRooms(res.data));
     });
+
+const setCrowdedRooms = crowdedRooms => ({
+  type: "SET_CROWDED_ROOMS",
+  crowdedRooms
+});
+
+export const startSetCrowdedRooms = () => (dispatch, getState) =>
+  axios
+    .get("http://localhost:3000/rooms/crowded", {
+      headers: { "x-auth": getState().auth.user.token }
+    })
+    .then(res => {
+      dispatch(setCrowdedRooms(res.data));
+    });

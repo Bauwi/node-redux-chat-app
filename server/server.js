@@ -35,20 +35,24 @@ app.use(express.static(publicPath));
 app.use(function(req, res, next) {
   // Website you wish to allow to connect
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+
   // Request methods you wish to allow
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
   );
+
   // Request headers you wish to allow
   res.setHeader(
     "Access-Control-Allow-Headers",
     "X-Requested-With,content-type"
   );
   res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+
   // Set to true if you need the website to include cookies in the requests sent
   // to the API (e.g. in case you use sessions)
   res.setHeader("Access-Control-Allow-Credentials", true);
+
   // Pass to next layer of middleware
   next();
 });
@@ -59,18 +63,21 @@ app.use(function(req, res, next) {
 
 io.on("connection", socket => {
   socket.on("join", (params, callback) => {
-    // if (!isRealString(params.name) || !isRealString(params.room)) {
-    //   return callback("name and room name required.");
-    // }
+    //User joins a room.
     socket.join(params.room);
+
     users.removeUser(socket.id);
+
+    // Add user to room in db.
     users.addUser(socket.id, params.name, params.room);
 
+    // Emit Welcome message
     socket.emit(
       "newMessage",
       generateMessage("Admin", "Welcome to the chat app.")
     );
 
+    // Notify to everyone in room that user joined.
     socket.broadcast
       .to(params.room)
       .emit("newMessage", generateMessage("Admin", `${params.name} joined.`));
@@ -79,10 +86,13 @@ io.on("connection", socket => {
   });
 
   socket.on("enterRoom", (roomName, user) => {
+    // New Room instance.
     const roomItem = new Room({
       name: roomName,
       createdAt: moment().valueOf()
     });
+
+    // Look for an existing room with the same name.
     Room.findOne(
       {
         name: roomName
@@ -91,19 +101,27 @@ io.on("connection", socket => {
         if (err) {
           return err;
         }
+
+        // Create a room if it does not already exist.
         if (!room) {
           roomItem.save().then(addedRoom => {
+            // InitialLoad ready to be dispatched with addedRoom.
             socket.emit("roomReady", addedRoom);
+
+            // Add user in room in db.
             addedRoom.addUser({
               ...user,
               socketId: socket.id,
               lastRoom: addedRoom._id
             });
+
+            // Add user in room in client.
             io.to(roomName).emit("newUserInRoom", user);
           });
+
+          // If Room already exists, initialLoad ready with room. Add user to db and client.
         } else {
           socket.emit("roomReady", room);
-
           room.addUser({ ...user, socketId: socket.id, lastRoom: room._id });
           io.to(roomName).emit("newUserInRoom", user);
         }
@@ -153,12 +171,18 @@ io.on("connection", socket => {
   });
 
   socket.on("disconnect", () => {
+    // Find room where user is disconnecting from.
     return Room.findOne({ users: { $elemMatch: { socketId: socket.id } } })
       .then(resRoom => {
+        // Find the user in the room.
         const user = resRoom.users.filter(
           user => user.socketId === socket.id
         )[0];
+
+        // Emit event to update the state of all user in that room.
         io.to(resRoom.name).emit("userLeftRoom", user.username);
+
+        // Notify that a user left.
         io
           .to(resRoom.name)
           .emit(
@@ -166,6 +190,7 @@ io.on("connection", socket => {
             generateMessage("Admin", `${user.username} has left.`)
           );
 
+        // Remove user from db
         return resRoom.removeUser(user._id);
       })
       .catch(e => console.log(e));
@@ -232,6 +257,15 @@ app.get("/rooms/last", authenticate, (req, res) => {
     .limit(5)
     .then(last => {
       res.status(200).send(last);
+    });
+});
+
+app.get("/rooms/crowded", authenticate, (req, res) => {
+  Room.find({})
+    .sort({ usersCount: -1 })
+    .limit(5)
+    .then(crowded => {
+      res.status(200).send(crowded);
     });
 });
 

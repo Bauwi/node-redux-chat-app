@@ -44,7 +44,11 @@ const RoomSchema = new mongoose.Schema({
       socketId: { type: String },
       lastRoom: { type: String }
     }
-  ]
+  ],
+  usersCount: {
+    type: Number,
+    default: 0
+  }
 });
 
 RoomSchema.methods.addMessage = function(message) {
@@ -64,13 +68,16 @@ RoomSchema.methods.getMessages = function() {
 RoomSchema.methods.addUser = function(user) {
   this.users = [...this.users, user];
 
-  return this.save().then(something => something);
+  return this.save().then(() => this.update({ $inc: { usersCount: 1 } }));
 };
 
 RoomSchema.methods.removeUser = function(id) {
   return this.update({
     $pull: {
       users: { _id: id }
+    },
+    $inc: {
+      usersCount: -1
     }
   });
 };

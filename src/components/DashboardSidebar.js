@@ -3,15 +3,21 @@ import { connect } from "react-redux";
 
 import DashboardSidebarModule from "./DashboardSidebarModule";
 
-import { startSetRoomsTop5, startSetLastRooms } from "./../actions/lobby";
+import {
+  startSetRoomsTop5,
+  startSetLastRooms,
+  startSetCrowdedRooms
+} from "./../actions/lobby";
 
 export class DashboardSidebar extends Component {
   static defaultProps = {
     top5: [],
-    lastRooms: []
+    lastRooms: [],
+    crowdedRooms: []
   };
 
   componentDidMount() {
+    this.props.startSetCrowdedRooms();
     this.props.startSetRoomsTop5();
     this.props.startSetLastRooms();
   }
@@ -19,6 +25,11 @@ export class DashboardSidebar extends Component {
   render() {
     return (
       <div className="dashboard__sidebar">
+        <DashboardSidebarModule
+          rooms={this.props.crowdedRooms}
+          category="Crowded"
+        />
+
         <DashboardSidebarModule rooms={this.props.top5} category="Popular" />
         <DashboardSidebarModule rooms={this.props.lastRooms} category="Last" />
       </div>
@@ -27,11 +38,13 @@ export class DashboardSidebar extends Component {
 }
 
 const mapDispatchToProps = dispatch => ({
+  startSetCrowdedRooms: () => dispatch(startSetCrowdedRooms()),
   startSetRoomsTop5: () => dispatch(startSetRoomsTop5()),
   startSetLastRooms: () => dispatch(startSetLastRooms())
 });
 
 const mapStateToProps = state => ({
+  crowdedRooms: state.lobby.crowdedRooms,
   top5: state.lobby.top5,
   lastRooms: state.lobby.lastRooms
 });

@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 
 import ChatSidebarUserlist from "./ChatSidebarUserlist";
+import ChatSidebarStats from "./ChatSidebarStats";
 
 import { updateUserList } from "./../actions/room";
 
@@ -17,7 +18,7 @@ export class ChatSidebar extends Component {
     const { room } = this.props;
     return (
       <div className="chat__sidebar">
-        <div id="users" />
+        <ChatSidebarStats />
         <ChatSidebarUserlist userList={this.props.userList} />
       </div>
     );

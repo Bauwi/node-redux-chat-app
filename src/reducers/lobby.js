@@ -12,6 +12,11 @@ export default (state = lobbyReducerInitialState, action) => {
         ...state,
         lastRooms: action.lastRooms
       };
+    case "SET_CROWDED_ROOMS":
+      return {
+        ...state,
+        crowdedRooms: action.crowdedRooms
+      };
     default:
       return state;
   }
