@@ -2,9 +2,45 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { withRouter } from "react-router-dom";
 import io from "socket.io-client";
+import { notification, Icon } from "antd";
 
+// import "antd/dist/antd.css";
 import ChatFooter from "./ChatFooter";
 import ChatSidebar from "./ChatSidebar";
+
+const userEntersRoomNotif = username => {
+  notification.open({
+    message: `${username} has joined.`,
+    className: "notification",
+    style: {
+      position: "relative",
+      top: "70px",
+      marginLeft: 335 - 250,
+      width: 300
+      //   position: "relative",
+      //   top: "65px"
+    },
+
+    icon: <Icon type="user-add" style={{ color: "#ffd21f" }} />
+  });
+};
+
+const userLeavesRoomNotif = username => {
+  notification.open({
+    message: `${username} has left.`,
+    className: "notification",
+    style: {
+      position: "relative",
+      top: "70px",
+      marginLeft: 335 - 250,
+      width: 300
+      //   position: "relative",
+      //   top: "65px"
+    },
+
+    icon: <Icon type="user-delete" style={{ color: "#ffd21f" }} />
+  });
+};
 
 const ROOT_URL =
   process.env.NODE_ENV === "production"
@@ -52,11 +88,19 @@ export class Chat extends Component {
 
         if (!alreadyInList) {
           this.props.newUserInRoom(user);
+          console.log("new user in room.");
+          if (user.username !== this.props.user.username) {
+            userEntersRoomNotif(user.username);
+          }
         }
       });
 
       socket.on("userLeftRoom", user => {
+        console.log(user);
         this.props.userLeftRoom(user);
+        if (user.username !== this.props.user.username) {
+          userLeavesRoomNotif(user);
+        }
       });
     });
 

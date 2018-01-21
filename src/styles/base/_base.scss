@@ -1,5 +1,6 @@
 * {
   box-sizing: border-box;
+  background: none;
 }
 
 html {
@@ -16,24 +17,37 @@ html {
   //   #4c0001,
   //   #070000
   // ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-  background: #000000; /* fallback for old browsers */
-  background: -webkit-linear-gradient(
-    to bottom,
-    #434343,
-    #000000
-  ); /* Chrome 10-25, Safari 5.1-6 */
-  background: linear-gradient(
-    to bottom,
-    #434343,
-    #000000
-  ); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 
 body {
   color: rgba(200, 200, 200, 1);
+  background: #000000 !important; /* fallback for old browsers */
+  background: -webkit-linear-gradient(
+    to bottom,
+    #434343,
+    #000000
+  ) !important; /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(
+    to bottom,
+    #434343,
+    #000000
+  ) !important; /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  // max-height: 100vh;
   font-family: Helvetica, Arial, sans-serif;
   font-size: $m-size;
   line-height: 1.6;
+}
+a,
+ol,
+ul,
+dl,
+p {
+  margin: 0;
+}
+
+h1 {
+  color: rgba(200, 200, 200, 1);
+  font-weight: 600;
 }
 
 button {

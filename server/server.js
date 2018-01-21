@@ -248,6 +248,9 @@ app.get("/rooms/top5", authenticate, (req, res) => {
     .limit(5)
     .then(top5 => {
       res.status(200).send(top5);
+    })
+    .catch(e => {
+      res.status(400).send(e);
     });
 });
 
@@ -258,6 +261,9 @@ app.get("/rooms/last", authenticate, (req, res) => {
     .limit(5)
     .then(last => {
       res.status(200).send(last);
+    })
+    .catch(e => {
+      res.status(400).send(e);
     });
 });
 
@@ -267,6 +273,9 @@ app.get("/rooms/crowded", authenticate, (req, res) => {
     .limit(5)
     .then(crowded => {
       res.status(200).send(crowded);
+    })
+    .catch(e => {
+      res.status(400).send(e);
     });
 });
 

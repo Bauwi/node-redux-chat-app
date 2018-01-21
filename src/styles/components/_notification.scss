@@ -1,0 +1,12 @@
+.notification {
+  background: rgba(248, 248, 248, 0.1);
+  border: 1px solid rgba(255, 210, 31, 0.5);
+  // width: 30rem;
+  div,
+  span {
+    color: rgba(248, 248, 248, 0.7);
+  }
+  i {
+    font-size: 3rem;
+  }
+}

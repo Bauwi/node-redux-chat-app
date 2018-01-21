@@ -25,6 +25,7 @@ export const login = user => ({
 
 export const startLogin = credentials => dispatch => {
   dispatch(loginIsLoading(true));
+  console.log(credentials);
   return axios
     .post(`${API_PATH}/users/login`, credentials)
     .then(res => {
