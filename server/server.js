@@ -285,9 +285,9 @@ app.delete("/users/me/token", authenticate, async (req, res) => {
 /*Serving App with Client-side routing                          */
 /****************************************************************/
 
-// app.get("/*", function(req, res) {
-//   res.sendFile(path.join(__dirname, "../public", "index.html"));
-// });
+app.get("/*", function(req, res) {
+  res.sendFile(path.join(__dirname, "../public", "index.html"));
+});
 
 server.listen(port, () => {
   console.log(`Started server at port ${port}`);
