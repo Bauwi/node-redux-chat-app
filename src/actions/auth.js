@@ -56,9 +56,12 @@ export const startLogout = () => (dispatch, getState) => {
 };
 
 export const startCreateAccount = credentials => dispatch => {
-  return axios.post(`${API_PATH}/users`, credentials).then(() => {
-    dispatch(
-      startLogin({ email: credentials.email, password: credentials.password })
-    );
-  });
+  return axios
+    .post(`${API_PATH}/users`, credentials)
+    .then(() => {
+      dispatch(
+        startLogin({ email: credentials.email, password: credentials.password })
+      );
+    })
+    .catch(e => console.log(e));
 };
