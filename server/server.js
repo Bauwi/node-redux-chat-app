@@ -32,30 +32,30 @@ app.use(express.static(publicPath));
 /*Add Headers for developpment mode                             */
 /****************************************************************/
 
-app.use(function(req, res, next) {
-  // Website you wish to allow to connect
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+// app.use(function(req, res, next) {
+//   // Website you wish to allow to connect
+//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
 
-  // Request methods you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-  );
+//   // Request methods you wish to allow
+//   res.setHeader(
+//     "Access-Control-Allow-Methods",
+//     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+//   );
 
-  // Request headers you wish to allow
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "X-Requested-With,content-type"
-  );
-  res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+//   // Request headers you wish to allow
+//   res.setHeader(
+//     "Access-Control-Allow-Headers",
+//     "X-Requested-With,content-type"
+//   );
+//   res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
 
-  // Set to true if you need the website to include cookies in the requests sent
-  // to the API (e.g. in case you use sessions)
-  res.setHeader("Access-Control-Allow-Credentials", true);
+//   // Set to true if you need the website to include cookies in the requests sent
+//   // to the API (e.g. in case you use sessions)
+//   res.setHeader("Access-Control-Allow-Credentials", true);
 
-  // Pass to next layer of middleware
-  next();
-});
+//   // Pass to next layer of middleware
+//   next();
+// });
 
 /****************************************************************/
 /*Chat sockets                                                  */
@@ -97,29 +97,21 @@ io.on("connection", socket => {
       {
         name: roomName
       },
-      (err, room) => {
+      async (err, room) => {
         if (err) {
           return err;
         }
 
         // Create a room if it does not already exist.
         if (!room) {
-          roomItem.save().then(addedRoom => {
-            // InitialLoad ready to be dispatched with addedRoom.
-            socket.emit("roomReady", addedRoom);
-
-            // Add user in room in db.
-            addedRoom.addUser({
-              ...user,
-              socketId: socket.id,
-              lastRoom: addedRoom._id
-            });
-
-            // Add user in room in client.
-            io.to(roomName).emit("newUserInRoom", user);
+          const addedRoom = await roomItem.save();
+          socket.emit("roomReady", addedRoom);
+          addedRoom.addUser({
+            ...user,
+            socketId: socket.id,
+            lastRoom: addedRoom._id
           });
-
-          // If Room already exists, initialLoad ready with room. Add user to db and client.
+          io.to(roomName).emit("newUserInRoom", user);
         } else {
           socket.emit("roomReady", room);
           room.addUser({ ...user, socketId: socket.id, lastRoom: room._id });
@@ -129,71 +121,74 @@ io.on("connection", socket => {
     );
   });
 
-  socket.on("createMessage", (message, room, callback) => {
+  socket.on("createMessage", async (message, room, callback) => {
     const user = users.getUser(socket.id);
-    return Room.findById(room._id)
-      .then(resRoom => {
-        if (resRoom && isRealString(message.text)) {
-          return resRoom.addMessage(generateMessage(user.name, message.text));
-        } else {
-          return Promise.reject();
-        }
-      })
-      .then(message => {
-        io
-          .to(room.name)
-          .emit("newMessage", generateMessage(user.name, message.text));
-      })
-      .catch(e => console.log(e));
+    try {
+      const resRoom = await Room.findById(room._id);
+      let tempMessage;
+      if (resRoom && isRealString(message.text)) {
+        tempMessage = await resRoom.addMessage(
+          generateMessage(user.name, message.text)
+        );
+      } else {
+        return Promise.reject();
+      }
+
+      io
+        .to(room.name)
+        .emit("newMessage", generateMessage(user.name, tempMessage.text));
+    } catch (error) {
+      console.log(error);
+    }
 
     callback();
   });
 
-  socket.on("createLocationMessage", (coords, room, username) => {
-    return Room.findById(room._id)
-      .then(resRoom => {
-        if (resRoom && coords.latitude && coords.longitude) {
-          return resRoom.addMessage(
-            generateLocationMessage(username, coords.latitude, coords.longitude)
-          );
-        } else {
-          return Promise.reject();
-        }
-      })
-      .then(message => {
-        io
-          .to(room.name)
-          .emit(
-            "newLocationMessage",
-            generateLocationMessage(username, coords.latitude, coords.longitude)
-          );
-      });
+  socket.on("createLocationMessage", async (coords, room, username) => {
+    try {
+      const resRoom = await Room.findById(room._id);
+      let tempMessage;
+      if (resRoom && coords.latitude && coords.longitude) {
+        tempMessage = await resRoom.addMessage(
+          generateLocationMessage(username, coords.latitude, coords.longitude)
+        );
+      } else {
+        return Promise.reject();
+      }
+      io
+        .to(room.name)
+        .emit(
+          "newLocationMessage",
+          generateLocationMessage(username, coords.latitude, coords.longitude)
+        );
+    } catch (error) {
+      console.log(error);
+    }
   });
 
-  socket.on("disconnect", () => {
+  socket.on("disconnect", async () => {
     // Find room where user is disconnecting from.
-    return Room.findOne({ users: { $elemMatch: { socketId: socket.id } } })
-      .then(resRoom => {
-        // Find the user in the room.
-        const user = resRoom.users.filter(
-          user => user.socketId === socket.id
-        )[0];
+    const resRoom = await Room.findOne({
+      users: { $elemMatch: { socketId: socket.id } }
+    });
 
-        // Emit event to update the state of all user in that room.
-        io.to(resRoom.name).emit("userLeftRoom", user.username);
+    // Find the user in the room.
+    const user = resRoom.users.filter(user => user.socketId === socket.id)[0];
 
-        // Notify that a user left.
-        io
-          .to(resRoom.name)
-          .emit(
-            "newMessage",
-            generateMessage("Admin", `${user.username} has left.`)
-          );
+    // Emit event to update the state of all user in that room.
+    io.to(resRoom.name).emit("userLeftRoom", user.username);
 
-        // Remove user from db
-        return resRoom.removeUser(user._id);
-      })
-      .catch(e => console.log(e));
+    // Notify that a user left.
+    io
+      .to(resRoom.name)
+      .emit(
+        "newMessage",
+        generateMessage("Admin", `${user.username} has left.`)
+      );
+
+    // Remove user from db
+    //TODO async for this.
+    return resRoom.removeUser(user._id);
   });
 });
 
@@ -203,80 +198,71 @@ io.on("connection", socket => {
 
 /* Create Account*/
 
-app.post("/users", (req, res) => {
+app.post("/users", async (req, res) => {
   const user = new User(_.pick(req.body, ["email", "password", "username"]));
-  user
-    .save()
-    .then(() => {
-      return user.generateAuthToken();
-    })
-    .then(token => {
-      console.log(token);
-      res.header("x-auth", token).send(user);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
+  try {
+    await user.save();
+    const token = await user.generateAuthToken();
+    res.header("x-auth", token).send(user);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 /* Log in */
 
-app.post("/users/login", (req, res) => {
+app.post("/users/login", async (req, res) => {
   const body = _.pick(req.body, ["email", "password"]);
 
-  User.findByCredentials(body.email, body.password)
-    .then(user => {
-      user.generateAuthToken().then(token => {
-        res.header("x-auth", token).send({
-          _id: user._id,
-          email: user.email,
-          username: user.username,
-          token
-        });
-      });
-    })
-    .catch(e => {
-      res.status(400).send(e);
+  try {
+    const user = await User.findByCredentials(body.email, body.password);
+    const token = await user.generateAuthToken();
+    res.header("x-auth", token).send({
+      _id: user._id,
+      email: user.email,
+      username: user.username,
+      token
     });
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 /* Get the rooms with the most messages */
 
-app.get("/rooms/top5", authenticate, (req, res) => {
-  Room.find({})
-    .sort({ messagesCount: -1 })
-    .limit(5)
-    .then(top5 => {
-      res.status(200).send(top5);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
+app.get("/rooms/top5", authenticate, async (req, res) => {
+  try {
+    const top5 = await Room.find({})
+      .sort({ messagesCount: -1 })
+      .limit(5);
+
+    res.status(200).send(top5);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 /* Get the last room created */
-app.get("/rooms/last", authenticate, (req, res) => {
-  Room.find({})
-    .sort({ createdAt: -1 })
-    .limit(5)
-    .then(last => {
-      res.status(200).send(last);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
+app.get("/rooms/last", authenticate, async (req, res) => {
+  try {
+    const last = await Room.find({})
+      .sort({ createdAt: -1 })
+      .limit(5);
+    res.status(200).send(last);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
-app.get("/rooms/crowded", authenticate, (req, res) => {
-  Room.find({})
-    .sort({ usersCount: -1 })
-    .limit(5)
-    .then(crowded => {
-      res.status(200).send(crowded);
-    })
-    .catch(e => {
-      res.status(400).send(e);
-    });
+app.get("/rooms/crowded", authenticate, async (req, res) => {
+  try {
+    const crowded = await Room.find({})
+      .sort({ usersCount: -1 })
+      .limit(5);
+    res.status(200).send(crowded);
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 app.get("/users/me", authenticate, (req, res) => {
@@ -285,15 +271,13 @@ app.get("/users/me", authenticate, (req, res) => {
 
 /* Remove token on log out */
 
-app.delete("/users/me/token", authenticate, (req, res) => {
-  req.user.removeToken(req.token).then(
-    () => {
-      res.status(200).send();
-    },
-    () => {
-      res.status(400).send();
-    }
-  );
+app.delete("/users/me/token", authenticate, async (req, res) => {
+  try {
+    await req.user.removeToken(req.token);
+    res.status(200).send();
+  } catch (error) {
+    res.status(400).send(error);
+  }
 });
 
 /****************************************************************/
@@ -307,3 +291,5 @@ app.get("/*", function(req, res) {
 server.listen(port, () => {
   console.log(`Started server at port ${port}`);
 });
+
+module.exports = { app };
