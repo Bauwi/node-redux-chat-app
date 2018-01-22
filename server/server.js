@@ -31,31 +31,32 @@ app.use(express.static(publicPath));
 /****************************************************************/
 /*Add Headers for developpment mode                             */
 /****************************************************************/
+if (!process.env.NODE_ENV && port !== 3000) {
+  app.use(function(req, res, next) {
+    // Website you wish to allow to connect
+    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
 
-// app.use(function(req, res, next) {
-//   // Website you wish to allow to connect
-//   res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+    // Request methods you wish to allow
+    res.setHeader(
+      "Access-Control-Allow-Methods",
+      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
+    );
 
-//   // Request methods you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Methods",
-//     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-//   );
+    // Request headers you wish to allow
+    res.setHeader(
+      "Access-Control-Allow-Headers",
+      "X-Requested-With,content-type"
+    );
+    res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
 
-//   // Request headers you wish to allow
-//   res.setHeader(
-//     "Access-Control-Allow-Headers",
-//     "X-Requested-With,content-type"
-//   );
-//   res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+    // Set to true if you need the website to include cookies in the requests sent
+    // to the API (e.g. in case you use sessions)
+    res.setHeader("Access-Control-Allow-Credentials", true);
 
-//   // Set to true if you need the website to include cookies in the requests sent
-//   // to the API (e.g. in case you use sessions)
-//   res.setHeader("Access-Control-Allow-Credentials", true);
-
-//   // Pass to next layer of middleware
-//   next();
-// });
+    // Pass to next layer of middleware
+    next();
+  });
+}
 
 /****************************************************************/
 /*Chat sockets                                                  */
@@ -284,9 +285,9 @@ app.delete("/users/me/token", authenticate, async (req, res) => {
 /*Serving App with Client-side routing                          */
 /****************************************************************/
 
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
-});
+// app.get("/*", function(req, res) {
+//   res.sendFile(path.join(__dirname, "../public", "index.html"));
+// });
 
 server.listen(port, () => {
   console.log(`Started server at port ${port}`);

@@ -10,11 +10,12 @@
   "scripts": {
     "build:dev": "webpack",
     "build:prod": "webpack -p --env production",
-    "dev-server": "webpack-dev-server",
+    "dev-server": "nodemon server/server.js",
+    "dev-client": "webpack-dev-server --port 8080",
     "test": "cross-env NODE_ENV=test jest --config=jest.config.json",
     "test-server":
       "export NODE_ENV=test || SET \"NODE_ENV=test\" && mocha server/**/*.test.js",
-    "test-server-watch": "nodemon --exec 'npm test'",
+    "test-server-watch": "nodemon --exec 'npm test-server'",
     "start": "node server/server.js",
     "heroku-postbuild": "npm run build:prod"
   },
