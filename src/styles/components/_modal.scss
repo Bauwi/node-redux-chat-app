@@ -1,0 +1,43 @@
+.ant-modal-content {
+  background: none;
+}
+.ant-modal-body {
+  border: 1px solid white;
+  padding: 0;
+}
+.ant-modal-header {
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.ant-modal-title {
+  color: white;
+}
+
+.ant-modal-content {
+  button {
+    max-width: 150px;
+    margin: 0;
+    padding: 0;
+    border-radius: 5px;
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 0;
+    color: rgba(255, 210, 31, 0.2);
+    cursor: pointer;
+    outline: none;
+    -webkit-appearance: none;
+    &:hover {
+      max-width: 150px;
+      border-radius: 5px;
+      box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.15);
+      font-size: 15px;
+      font-weight: 500;
+      line-height: 0;
+      color: rgba(255, 210, 31, 1);
+      cursor: pointer;
+      outline: none;
+      -webkit-appearance: none;
+    }
+  }
+}

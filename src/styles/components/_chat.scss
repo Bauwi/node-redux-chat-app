@@ -179,6 +179,7 @@ button:disabled {
   border: none;
   padding: 10px;
   flex-grow: 1;
+  outline-color: rgba(255, 210, 31, 0.1);
 }
 
 .chat__messages {
@@ -225,6 +226,21 @@ button:disabled {
   font-weight: 600;
   margin-right: 10px;
 }
+.message__location-message {
+  display: flex;
+  align-items: center;
+  button {
+    background: none;
+    border: none;
+    color: rgba(255, 210, 31, 0.5);
+    font-size: 1rem;
+    text-decoration: underline;
+  }
+  p {
+    font-style: italic;
+  }
+}
+
 .admin {
   color: #ee252a !important;
 }

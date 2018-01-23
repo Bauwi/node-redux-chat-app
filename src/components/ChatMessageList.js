@@ -7,6 +7,7 @@ import ChatMessageListItem from "./ChatMessageListItem";
 
 export class ChatMessageList extends Component {
   componentDidMount() {
+    console.log("MEssagelistmounted");
     this.scrollToBottom();
   }
 

@@ -9,6 +9,11 @@ const RoomSchema = new mongoose.Schema({
   },
   messages: [
     {
+      type: {
+        type: String,
+        required: true,
+        minLength: 1
+      },
       from: {
         type: String,
         required: true,
@@ -23,10 +28,9 @@ const RoomSchema = new mongoose.Schema({
         type: Number
         // required: true
       },
-      url: {
-        type: String,
-        minLength: 1,
-        trim: true
+      coords: {
+        type: Array,
+        minLength: 2
       }
     }
   ],
