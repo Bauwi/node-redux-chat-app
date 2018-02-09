@@ -3,9 +3,11 @@ require('./db/mongoose');
 
 const path = require('path');
 const http = require('http');
+const fs = require('fs');
 const express = require('express');
 const socketIO = require('socket.io');
 const _ = require('lodash');
+const {analyzeProject} = require('./modules/analyzer')
 let moment = require('moment');
 
 if ('default' in moment) {
@@ -260,6 +262,37 @@ app.delete('/users/me/token', authenticate, async (req, res) => {
     await req.user.removeToken(req.token);
     res.status(200).send();
   } catch (error) {
+    res.status(400).send(error);
+  }
+});
+
+/* Get Stats of the App */
+
+app.get("/stats", async (req, res) => {
+  const options = {
+    componentsFolderPath: "src/components/",
+    stats: {
+      public: {
+        path: "public/",
+        extensions: ["html"]
+      },
+      server: {
+        path: "server/",
+        extensions: ["js"]
+      },
+      src: {
+        path: "src/",
+        extensions: ["js", "scss"]
+      }
+    }
+  };
+
+  try {
+    const stats = await analyzeProject(options);
+    fs.writeFile("stats.json", stats);
+    res.send(stats);
+  } catch (error) {
+    console.log(error);
     res.status(400).send(error);
   }
 });

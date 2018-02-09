@@ -1,0 +1,72 @@
+[
+  {
+    "numberOfComponents": 22
+  },
+  {
+    "folder": "public/",
+    "stats": [
+      {
+        "extension": "html",
+        "extensionStats": {
+          "total": 18,
+          "source": 15,
+          "comment": 1,
+          "single": 1,
+          "block": 0,
+          "mixed": 1,
+          "empty": 3,
+          "todo": 0
+        }
+      }
+    ]
+  },
+  {
+    "folder": "server/",
+    "stats": [
+      {
+        "extension": "js",
+        "extensionStats": {
+          "total": 780,
+          "source": 620,
+          "comment": 52,
+          "single": 34,
+          "block": 18,
+          "mixed": 3,
+          "empty": 111,
+          "todo": 1
+        }
+      }
+    ]
+  },
+  {
+    "folder": "src/",
+    "stats": [
+      {
+        "extension": "js",
+        "extensionStats": {
+          "total": 1721,
+          "source": 1519,
+          "comment": 46,
+          "single": 45,
+          "block": 1,
+          "mixed": 9,
+          "empty": 165,
+          "todo": 0
+        }
+      },
+      {
+        "extension": "scss",
+        "extensionStats": {
+          "total": 870,
+          "source": 713,
+          "comment": 59,
+          "single": 46,
+          "block": 13,
+          "mixed": 9,
+          "empty": 107,
+          "todo": 0
+        }
+      }
+    ]
+  }
+]
