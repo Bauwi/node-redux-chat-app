@@ -9,7 +9,7 @@ export const Header = ({ startLogout, room }) => (
       <div className="header__content">
         <div className="header__content--left">
           <Link className="header__title" to="/dashboard">
-            <h1>DansMonChat</h1>
+            <h1>ChatApp</h1>
           </Link>
           <h4 className="header__room">
             {room ? `/ ${room.toUpperCase()}` : ""}
