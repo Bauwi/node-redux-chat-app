@@ -1,8 +1,8 @@
-const { ObjectID } = require("mongodb");
-const jwt = require("jsonwebtoken");
+const { ObjectID } = require('mongodb');
+const jwt = require('jsonwebtoken');
 
-const { Room } = require("./../../models/room");
-const { User } = require("./../../models/user");
+const { Room } = require('./../../models/room');
+const { User } = require('./../../models/user');
 
 const userOneId = new ObjectID();
 const userTwoId = new ObjectID();
@@ -12,57 +12,49 @@ const userFourId = new ObjectID();
 const users = [
   {
     _id: userOneId,
-    email: "andrew@example.com",
-    password: "userOnePass",
-    username: "geronimo",
+    email: 'andrew@example.com',
+    password: 'userOnePass',
+    username: 'geronimo',
     tokens: [
       {
-        access: "auth",
-        token: jwt
-          .sign({ _id: userOneId, access: "auth" }, process.env.JWT_SECRET)
-          .toString()
+        access: 'auth',
+        token: jwt.sign({ _id: userOneId, access: 'auth' }, '123456789').toString()
       }
     ]
   },
   {
     _id: userTwoId,
-    email: "jen@example.com",
-    password: "userTwoPass",
-    username: "marie curie",
+    email: 'jen@example.com',
+    password: 'userTwoPass',
+    username: 'marie curie',
     tokens: [
       {
-        access: "auth",
-        token: jwt
-          .sign({ _id: userTwoId, access: "auth" }, process.env.JWT_SECRET)
-          .toString()
+        access: 'auth',
+        token: jwt.sign({ _id: userTwoId, access: 'auth' }, '123456789').toString()
       }
     ]
   },
   {
     _id: userThreeId,
-    email: "riri@example.com",
-    password: "userThreePass",
-    username: "riri",
+    email: 'riri@example.com',
+    password: 'userThreePass',
+    username: 'riri',
     tokens: [
       {
-        access: "auth",
-        token: jwt
-          .sign({ _id: userTwoId, access: "auth" }, process.env.JWT_SECRET)
-          .toString()
+        access: 'auth',
+        token: jwt.sign({ _id: userTwoId, access: 'auth' }, '123456789').toString()
       }
     ]
   },
   {
     _id: userFourId,
-    email: "fifi@example.com",
-    password: "userFourPass",
-    username: "fifi",
+    email: 'fifi@example.com',
+    password: 'userFourPass',
+    username: 'fifi',
     tokens: [
       {
-        access: "auth",
-        token: jwt
-          .sign({ _id: userTwoId, access: "auth" }, process.env.JWT_SECRET)
-          .toString()
+        access: 'auth',
+        token: jwt.sign({ _id: userTwoId, access: 'auth' }, '123456789').toString()
       }
     ]
   }
@@ -71,7 +63,7 @@ const users = [
 const rooms = [
   {
     _id: new ObjectID(),
-    name: "peaky blinders",
+    name: 'peaky blinders',
     createdAt: 123,
     usersCount: 1,
     users: [users[0]],
@@ -81,7 +73,7 @@ const rooms = [
   },
   {
     _id: new ObjectID(),
-    name: "matrix",
+    name: 'matrix',
     createdAt: 0,
     usersCount: 2,
     users: [users[0], users[1]],
@@ -91,7 +83,7 @@ const rooms = [
   },
   {
     _id: new ObjectID(),
-    name: "dark",
+    name: 'dark',
     createdAt: 1234,
     usersCount: 3,
     users: [users[0], users[1], users[3]],
@@ -101,7 +93,7 @@ const rooms = [
   },
   {
     _id: new ObjectID(),
-    name: "stranger things",
+    name: 'stranger things',
     createdAt: 0,
     usersCount: 0,
     users: [],
@@ -111,7 +103,7 @@ const rooms = [
   },
   {
     _id: new ObjectID(),
-    name: "casa de papel",
+    name: 'casa de papel',
     createdAt: 0,
     usersCount: 4,
     users: [users[0], users[1], users[2], users[3]],
@@ -121,7 +113,7 @@ const rooms = [
   },
   {
     _id: new ObjectID(),
-    name: "true detective",
+    name: 'true detective',
     createdAt: 0,
     usersCount: 0,
     users: [],
@@ -145,4 +137,9 @@ const populateUsers = async () => {
   await Promise.all([userOne, userTwo]);
 };
 
-module.exports = { rooms, populateRooms, users, populateUsers };
+module.exports = {
+  rooms,
+  populateRooms,
+  users,
+  populateUsers
+};

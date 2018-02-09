@@ -78,7 +78,7 @@ const TextInput = ({
     </div>
   );
 };
-const MyForm = props => {
+export const MyForm = props => {
   const {
     values,
     touched,

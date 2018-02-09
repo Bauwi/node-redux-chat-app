@@ -2,25 +2,30 @@
 
 exports[`should render LoginPage correctly 1`] = `
 <div
-  className="box-layout"
+  className="centered-form__form"
 >
-  <div
-    className="box-layout__box"
+  <h1
+    className="login-title"
   >
-    <h1
-      className="box-layout__title"
+    Login
+  </h1>
+  <withRouter(Connect(C))
+    user={
+      Object {
+        "email": "",
+        "password": "",
+      }
+    }
+  />
+  <div
+    className="login-option"
+  >
+    <Link
+      replace={false}
+      to="/create"
     >
-      Boilerplate React App
-    </h1>
-    <p>
-      Tag Line for App
-    </p>
-    <button
-      className="button"
-      onClick={[Function]}
-    >
-      Login With Google
-    </button>
+      need an account?
+    </Link>
   </div>
 </div>
 `;

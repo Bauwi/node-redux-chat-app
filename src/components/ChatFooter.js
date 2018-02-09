@@ -67,10 +67,11 @@ export class ChatFooter extends Component {
             autoComplete="off"
           />
           <button onClick={this.handleSubmit}>Send</button>
+          <button id="send-location" onClick={this.handleLocationMessage}>
+            Send location
+          </button>
         </form>
-        <button id="send-location" onClick={this.handleLocationMessage}>
-          Send location
-        </button>
+
       </div>
     );
   }

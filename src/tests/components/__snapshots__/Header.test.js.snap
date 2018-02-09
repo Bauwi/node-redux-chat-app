@@ -10,15 +10,22 @@ exports[`should render Header correctly 1`] = `
     <div
       className="header__content"
     >
-      <Link
-        className="header__title"
-        replace={false}
-        to="/dashboard"
+      <div
+        className="header__content--left"
       >
-        <h1>
-          Boilerplate
-        </h1>
-      </Link>
+        <Link
+          className="header__title"
+          replace={false}
+          to="/dashboard"
+        >
+          <h1>
+            DansMonChat
+          </h1>
+        </Link>
+        <h4
+          className="header__room"
+        />
+      </div>
       <button
         className="button button--link"
         onClick={[Function]}

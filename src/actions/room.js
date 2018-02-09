@@ -1,25 +1,23 @@
-import axios from "axios";
-
 export const newMessage = message => ({
-  type: "NEW_MESSAGE",
+  type: 'NEW_MESSAGE',
   message
 });
 
-export const setNewMessage = (socket, message, roomName) => dispatch => {
-  socket.emit("createMessage", message, roomName, function() {});
+export const setNewMessage = (socket, message, roomName) => (dispatch) => {
+  socket.emit('createMessage', message, roomName, () => {});
 };
 
 export const initialLoad = room => ({
-  type: "INITIAL_LOAD",
+  type: 'INITIAL_LOAD',
   room
 });
 
 const roomHasLoaded = bool => ({
-  type: "ROOM_HAS_LOADED",
+  type: 'ROOM_HAS_LOADED',
   isLoaded: bool
 });
 
-export const startInitialLoad = (room, loadedStatus) => dispatch => {
+export const startInitialLoad = (room, loadedStatus) => (dispatch) => {
   dispatch(roomHasLoaded(false));
   return new Promise((resolve, reject) => {
     if (!loadedStatus) {
@@ -29,20 +27,20 @@ export const startInitialLoad = (room, loadedStatus) => dispatch => {
 };
 
 export const updateUserList = userList => ({
-  type: "UPDATE_USER_LIST",
+  type: 'UPDATE_USER_LIST',
   userList
 });
 
 export const newUserInRoom = user => ({
-  type: "NEW_USER_IN_ROOM",
+  type: 'NEW_USER_IN_ROOM',
   user
 });
 
 export const userLeftRoom = username => ({
-  type: "USER_LEFT_ROOM",
+  type: 'USER_LEFT_ROOM',
   username
 });
 
 export const clearRoom = () => ({
-  type: "CLEAR_ROOM"
+  type: 'CLEAR_ROOM'
 });

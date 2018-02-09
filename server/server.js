@@ -1,23 +1,27 @@
-require("./config/config");
-require("./db/mongoose");
+require('./config/config');
+require('./db/mongoose');
 
-const path = require("path");
-const http = require("http");
-const express = require("express");
-const socketIO = require("socket.io");
-const _ = require("lodash");
-const moment = require("moment");
+const path = require('path');
+const http = require('http');
+const express = require('express');
+const socketIO = require('socket.io');
+const _ = require('lodash');
+let moment = require('moment');
 
-const { generateMessage, generateLocationMessage } = require("./utils/message");
-const { isRealString } = require("./utils/validation.js");
-const { Users } = require("./utils/users");
-const { Room } = require("./models/room");
-const { User } = require("./models/user");
-const { authenticate } = require("./middleware/authenticate");
+if ('default' in moment) {
+  moment = moment.default;
+}
 
-const bodyParser = require("body-parser");
+const { generateMessage, generateLocationMessage } = require('./utils/message');
+const { isRealString } = require('./utils/validation.js');
+const { Users } = require('./utils/users');
+const { Room } = require('./models/room');
+const { User } = require('./models/user');
+const { authenticate } = require('./middleware/authenticate');
 
-const publicPath = path.join(__dirname, "../public");
+const bodyParser = require('body-parser');
+
+const publicPath = path.join(__dirname, '../public');
 const port = process.env.PORT || 3000;
 
 const app = express();
@@ -28,43 +32,38 @@ app.use(bodyParser.json());
 
 app.use(express.static(publicPath));
 
-/****************************************************************/
-/*Add Headers for developpment mode                             */
-/****************************************************************/
+/* ************************************************************* */
+/* Add Headers for developpment mode                             */
+/* ************************************************************* */
+
 if (!process.env.NODE_ENV && port !== 3000) {
-  app.use(function(req, res, next) {
+  app.use((req, res, next) => {
     // Website you wish to allow to connect
-    res.setHeader("Access-Control-Allow-Origin", "http://localhost:8080");
+    res.setHeader('Access-Control-Allow-Origin', 'http://localhost:8080');
 
     // Request methods you wish to allow
-    res.setHeader(
-      "Access-Control-Allow-Methods",
-      "GET, POST, OPTIONS, PUT, PATCH, DELETE"
-    );
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
     // Request headers you wish to allow
-    res.setHeader(
-      "Access-Control-Allow-Headers",
-      "X-Requested-With,content-type"
-    );
-    res.setHeader("Access-Control-Allow-Headers", "x-auth, content-type");
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Headers', 'x-auth, content-type');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
-    res.setHeader("Access-Control-Allow-Credentials", true);
+    res.setHeader('Access-Control-Allow-Credentials', true);
 
     // Pass to next layer of middleware
     next();
   });
 }
 
-/****************************************************************/
-/*Chat sockets                                                  */
-/****************************************************************/
+/* ************************************************************** */
+/* Chat sockets                                                   */
+/* ************************************************************** */
 
-io.on("connection", socket => {
-  socket.on("join", (params, callback) => {
-    //User joins a room.
+io.on('connection', (socket) => {
+  socket.on('join', (params, callback) => {
+    // User joins a room.
     socket.join(params.room);
 
     users.removeUser(socket.id);
@@ -73,20 +72,17 @@ io.on("connection", socket => {
     users.addUser(socket.id, params.name, params.room);
 
     // Emit Welcome message
-    socket.emit(
-      "newMessage",
-      generateMessage("Admin", "Welcome to the chat app.")
-    );
+    socket.emit('newMessage', generateMessage('Admin', 'Welcome to the chat app.'));
 
     // Notify to everyone in room that user joined.
     socket.broadcast
       .to(params.room)
-      .emit("newMessage", generateMessage("Admin", `${params.name} joined.`));
+      .emit('newMessage', generateMessage('Admin', `${params.name} joined.`));
 
     callback();
   });
 
-  socket.on("enterRoom", (roomName, user) => {
+  socket.on('enterRoom', (roomName, user) => {
     // New Room instance.
     const roomItem = new Room({
       name: roomName,
@@ -106,68 +102,60 @@ io.on("connection", socket => {
         // Create a room if it does not already exist.
         if (!room) {
           const addedRoom = await roomItem.save();
-          socket.emit("roomReady", addedRoom);
-          addedRoom.addUser({
+          socket.emit('roomReady', addedRoom);
+          io.to(roomName).emit('newUserInRoom', user);
+          return addedRoom.addUser({
             ...user,
             socketId: socket.id,
             lastRoom: addedRoom._id
           });
-          io.to(roomName).emit("newUserInRoom", user);
-        } else {
-          socket.emit("roomReady", room);
-          room.addUser({ ...user, socketId: socket.id, lastRoom: room._id });
-          io.to(roomName).emit("newUserInRoom", user);
         }
+        socket.emit('roomReady', room);
+        io.to(roomName).emit('newUserInRoom', user);
+        return room.addUser({ ...user, socketId: socket.id, lastRoom: room._id });
       }
     );
   });
 
-  socket.on("createMessage", async (message, room, callback) => {
+  socket.on('createMessage', async (message, room, callback) => {
     const user = users.getUser(socket.id);
     try {
       const resRoom = await Room.findById(room._id);
       let tempMessage;
       if (resRoom && isRealString(message.text)) {
-        tempMessage = await resRoom.addMessage(
-          generateMessage(user.name, message.text)
-        );
+        tempMessage = await resRoom.addMessage(generateMessage(user.name, message.text));
       } else {
         return Promise.reject();
       }
 
-      io
-        .to(room.name)
-        .emit("newMessage", generateMessage(user.name, tempMessage.text));
+      io.to(room.name).emit('newMessage', generateMessage(user.name, tempMessage.text));
     } catch (error) {
-      console.log(error);
+      throw new Error('Unable to create message', error);
     }
 
-    callback();
+    return callback();
   });
 
-  socket.on("createLocationMessage", async (coords, room, username) => {
+  socket.on('createLocationMessage', async (coords, room, username) => {
     try {
       const resRoom = await Room.findById(room._id);
-      let tempMessage;
       if (resRoom && coords.latitude && coords.longitude) {
-        tempMessage = await resRoom.addMessage(
-          generateLocationMessage(username, coords.latitude, coords.longitude)
-        );
+        await resRoom.addMessage(generateLocationMessage(username, coords.latitude, coords.longitude));
       } else {
         return Promise.reject();
       }
-      io
+      return io
         .to(room.name)
         .emit(
-          "newLocationMessage",
+          'newLocationMessage',
           generateLocationMessage(username, coords.latitude, coords.longitude)
         );
     } catch (error) {
-      console.log(error);
+      throw new Error('Unable to create location message', error);
     }
   });
 
-  socket.on("disconnect", async () => {
+  socket.on('disconnect', async () => {
     // Find room where user is disconnecting from.
     const resRoom = await Room.findOne({
       users: { $elemMatch: { socketId: socket.id } }
@@ -177,34 +165,29 @@ io.on("connection", socket => {
     const user = resRoom.users.filter(user => user.socketId === socket.id)[0];
 
     // Emit event to update the state of all user in that room.
-    io.to(resRoom.name).emit("userLeftRoom", user.username);
+    io.to(resRoom.name).emit('userLeftRoom', user.username);
 
     // Notify that a user left.
-    io
-      .to(resRoom.name)
-      .emit(
-        "newMessage",
-        generateMessage("Admin", `${user.username} has left.`)
-      );
+    io.to(resRoom.name).emit('newMessage', generateMessage('Admin', `${user.username} has left.`));
 
     // Remove user from db
-    //TODO async for this.
+    // TODO async for this.
     return resRoom.removeUser(user._id);
   });
 });
 
-/****************************************************************/
-/*Authentication                                                */
-/****************************************************************/
+/** ************************************************************* */
+/* Authentication                                                 */
+/** ************************************************************* */
 
-/* Create Account*/
+/* Create Account */
 
-app.post("/users", async (req, res) => {
-  const user = new User(_.pick(req.body, ["email", "password", "username"]));
+app.post('/users', async (req, res) => {
+  const user = new User(_.pick(req.body, ['email', 'password', 'username']));
   try {
     await user.save();
     const token = await user.generateAuthToken();
-    res.header("x-auth", token).send(user);
+    res.header('x-auth', token).send(user);
   } catch (error) {
     res.status(400).send(error);
   }
@@ -212,13 +195,13 @@ app.post("/users", async (req, res) => {
 
 /* Log in */
 
-app.post("/users/login", async (req, res) => {
-  const body = _.pick(req.body, ["email", "password"]);
+app.post('/users/login', async (req, res) => {
+  const body = _.pick(req.body, ['email', 'password']);
 
   try {
     const user = await User.findByCredentials(body.email, body.password);
     const token = await user.generateAuthToken();
-    res.header("x-auth", token).send({
+    res.header('x-auth', token).send({
       _id: user._id,
       email: user.email,
       username: user.username,
@@ -231,7 +214,7 @@ app.post("/users/login", async (req, res) => {
 
 /* Get the rooms with the most messages */
 
-app.get("/rooms/top5", authenticate, async (req, res) => {
+app.get('/rooms/top5', authenticate, async (req, res) => {
   try {
     const top5 = await Room.find({})
       .sort({ messagesCount: -1 })
@@ -244,7 +227,7 @@ app.get("/rooms/top5", authenticate, async (req, res) => {
 });
 
 /* Get the last room created */
-app.get("/rooms/last", authenticate, async (req, res) => {
+app.get('/rooms/last', authenticate, async (req, res) => {
   try {
     const last = await Room.find({})
       .sort({ createdAt: -1 })
@@ -255,7 +238,7 @@ app.get("/rooms/last", authenticate, async (req, res) => {
   }
 });
 
-app.get("/rooms/crowded", authenticate, async (req, res) => {
+app.get('/rooms/crowded', authenticate, async (req, res) => {
   try {
     const crowded = await Room.find({})
       .sort({ usersCount: -1 })
@@ -266,13 +249,13 @@ app.get("/rooms/crowded", authenticate, async (req, res) => {
   }
 });
 
-app.get("/users/me", authenticate, (req, res) => {
+app.get('/users/me', authenticate, (req, res) => {
   res.send(req.user);
 });
 
 /* Remove token on log out */
 
-app.delete("/users/me/token", authenticate, async (req, res) => {
+app.delete('/users/me/token', authenticate, async (req, res) => {
   try {
     await req.user.removeToken(req.token);
     res.status(200).send();
@@ -281,12 +264,12 @@ app.delete("/users/me/token", authenticate, async (req, res) => {
   }
 });
 
-/****************************************************************/
-/*Serving App with Client-side routing                          */
-/****************************************************************/
+/* ************************************************************** */
+/* Serving App with Client-side routing                           */
+/* ************************************************************** */
 
-app.get("/*", function(req, res) {
-  res.sendFile(path.join(__dirname, "../public", "index.html"));
+app.get('/*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../public', 'index.html'));
 });
 
 server.listen(port, () => {
