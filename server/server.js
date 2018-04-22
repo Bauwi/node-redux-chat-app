@@ -6,6 +6,8 @@ const http = require('http');
 const fs = require('fs');
 const express = require('express');
 const socketIO = require('socket.io');
+const compression = require("compression");
+const minify = require("express-minify");
 const _ = require('lodash');
 const {analyzeProject} = require('./modules/analyzer')
 let moment = require('moment');
@@ -30,6 +32,8 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIO(server);
 const users = new Users();
+app.use(compression());
+app.use(minify());
 app.use(bodyParser.json());
 
 app.use(express.static(publicPath));

@@ -4,7 +4,6 @@
   "engines": {
     "node": "9.3.0"
   },
-  "main": "index.js",
   "author": "Kevin Philippe",
   "license": "MIT",
   "scripts": {
@@ -34,10 +33,12 @@
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.2",
     "classnames": "^2.2.5",
+    "compression": "^1.7.2",
     "crypto-js": "^3.1.9-1",
     "css-loader": "0.28.4",
     "eslint-config-airbnb": "^16.1.0",
     "express": "4.15.4",
+    "express-minify": "^1.0.0",
     "extract-text-webpack-plugin": "3.0.0",
     "formik": "^0.10.5",
     "history": "4.7.2",
@@ -88,6 +89,7 @@
     "prettier": "^1.7.4",
     "react-test-renderer": "16.0.0",
     "supertest": "^3.0.0",
+    "webpack-bundle-analyzer": "^2.11.1",
     "webpack-dev-server": "2.5.1"
   },
   "repository": "git@github.com:Bauwi/node-redux-chat-app.git"
