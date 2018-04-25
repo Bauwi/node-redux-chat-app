@@ -1,8 +1,8 @@
-import React, { Component } from "react";
-import { Modal, Button } from "antd";
+import React, { Component } from 'react';
+import { Modal, Button } from 'antd';
 
-import CalendarDate from "./CalendarDate";
-import MapComponent from "./MapComponent";
+import CalendarDate from './CalendarDate';
+import MapComponent from './MapComponent';
 
 export default class ChatMessageListItem extends Component {
   state = { visible: false };
@@ -11,23 +11,24 @@ export default class ChatMessageListItem extends Component {
       visible: true
     });
   };
-  handleOk = e => {
-    console.log(e);
+  handleOk = (e) => {
     this.setState({
       visible: false
     });
   };
-  handleCancel = e => {
+  handleCancel = (e) => {
     this.setState({
       visible: false
     });
   };
   render() {
-    const { from, text, createdAt, coords } = this.props;
+    const {
+      from, text, createdAt, coords
+    } = this.props;
     return (
       <li className="message">
         <div className="message__title">
-          <h4 className={from === "Admin" && "admin"}>{from}</h4>
+          <h4 className={from === 'Admin' && 'admin'}>{from}</h4>
           <CalendarDate createdAt={createdAt} />
         </div>
         <div className="message__body">
@@ -45,7 +46,7 @@ export default class ChatMessageListItem extends Component {
                 visible={this.state.visible}
                 onOk={this.handleOk}
                 onCancel={this.handleCancel}
-                width={"50vw"}
+                width="50vw"
                 footer={null}
               >
                 <MapComponent isMarkerShown coords={coords} />

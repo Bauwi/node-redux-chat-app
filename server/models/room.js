@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const RoomSchema = new mongoose.Schema({
   name: {
@@ -55,7 +55,7 @@ const RoomSchema = new mongoose.Schema({
   }
 });
 
-RoomSchema.methods.addMessage = function(message) {
+RoomSchema.methods.addMessage = function (message) {
   this.messages = [...this.messages, message];
 
   return this.save()
@@ -63,19 +63,20 @@ RoomSchema.methods.addMessage = function(message) {
     .then(() => message);
 };
 
-RoomSchema.methods.getUsers = function() {
+RoomSchema.methods.getUsers = function () {
   return this.users;
 };
-RoomSchema.methods.getMessages = function() {
+RoomSchema.methods.getMessages = function () {
   return this.messages;
 };
-RoomSchema.methods.addUser = function(user) {
-  this.users = [...this.users, user];
+RoomSchema.methods.addUser = function (user) {
+  const userInRoom = !this.users.map(user => user.username).includes(user.username);
+  this.users = userInRoom ? [...this.users, user] : [...this.users];
 
   return this.save().then(() => this.update({ $inc: { usersCount: 1 } }));
 };
 
-RoomSchema.methods.removeUser = function(id) {
+RoomSchema.methods.removeUser = function (id) {
   return this.update({
     $pull: {
       users: { _id: id }
@@ -86,6 +87,6 @@ RoomSchema.methods.removeUser = function(id) {
   });
 };
 
-const Room = mongoose.model("Room", RoomSchema);
+const Room = mongoose.model('Room', RoomSchema);
 
 module.exports = { Room };

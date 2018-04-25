@@ -1,13 +1,12 @@
-import React, { Component } from "react";
-import ReactDOM from "react-dom";
+import React, { Component } from 'react';
+import ReactDOM from 'react-dom';
 
-import { connect } from "react-redux";
+import { connect } from 'react-redux';
 
-import ChatMessageListItem from "./ChatMessageListItem";
+import ChatMessageListItem from './ChatMessageListItem';
 
 export class ChatMessageList extends Component {
   componentDidMount() {
-    console.log("MEssagelistmounted");
     this.scrollToBottom();
   }
 
@@ -16,13 +15,11 @@ export class ChatMessageList extends Component {
   }
 
   scrollToBottom() {
-    this.el.scrollIntoView({ behaviour: "smooth" });
+    this.el.scrollIntoView({ behaviour: 'smooth' });
   }
   renderMessages = () =>
     this.props.messages &&
-    this.props.messages.map(message => {
-      return <ChatMessageListItem key={message.createdAt} {...message} />;
-    });
+    this.props.messages.map(message => <ChatMessageListItem key={message.createdAt} {...message} />);
 
   render() {
     return (
@@ -31,7 +28,7 @@ export class ChatMessageList extends Component {
           {this.renderMessages()}
           <li
             key="autoscroll"
-            ref={el => {
+            ref={(el) => {
               this.el = el;
             }}
           />

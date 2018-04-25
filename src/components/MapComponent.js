@@ -9,10 +9,6 @@ import {
 import mapStyle from "./../utils/mapStyle.json";
 
 export class MapComponent extends Component {
-  componentDidMount() {
-    console.log("mounted");
-  }
-
   render() {
     return (
       <GoogleMap

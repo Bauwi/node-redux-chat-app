@@ -166,7 +166,6 @@ describe('GET /rooms/last5', () => {
       .set('x-auth', users[0].tokens[0].token)
       .expect(200)
       .expect((res) => {
-        console.log(res);
         expect(res.body.rooms.length).toBe(5);
         expect(res.body.rooms).toEqual[(rooms[5], rooms[4], rooms[3], rooms[2], rooms[1])];
       })

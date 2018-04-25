@@ -6,10 +6,10 @@ const http = require('http');
 const fs = require('fs');
 const express = require('express');
 const socketIO = require('socket.io');
-const compression = require("compression");
-const minify = require("express-minify");
+const compression = require('compression');
+const minify = require('express-minify');
 const _ = require('lodash');
-const {analyzeProject} = require('./modules/analyzer')
+const { analyzeProject } = require('./modules/analyzer');
 let moment = require('moment');
 
 if ('default' in moment) {
@@ -169,7 +169,7 @@ io.on('connection', (socket) => {
 
     // Find the user in the room.
     const user = resRoom.users.filter(user => user.socketId === socket.id)[0];
-
+    await resRoom.removeUser(user._id)
     // Emit event to update the state of all user in that room.
     io.to(resRoom.name).emit('userLeftRoom', user.username);
 
@@ -178,7 +178,7 @@ io.on('connection', (socket) => {
 
     // Remove user from db
     // TODO async for this.
-    return resRoom.removeUser(user._id);
+    return ;
   });
 });
 
@@ -272,28 +272,28 @@ app.delete('/users/me/token', authenticate, async (req, res) => {
 
 /* Get Stats of the App */
 
-app.get("/stats", async (req, res) => {
+app.get('/stats', async (req, res) => {
   const options = {
-    componentsFolderPath: "src/components/",
+    componentsFolderPath: 'src/components/',
     stats: {
       public: {
-        path: "public/",
-        extensions: ["html"]
+        path: 'public/',
+        extensions: ['html']
       },
       server: {
-        path: "server/",
-        extensions: ["js"]
+        path: 'server/',
+        extensions: ['js']
       },
       src: {
-        path: "src/",
-        extensions: ["js", "scss"]
+        path: 'src/',
+        extensions: ['js', 'scss']
       }
     }
   };
 
   try {
     const stats = await analyzeProject(options);
-    fs.writeFile("stats.json", stats);
+    fs.writeFile('stats.json', stats);
     res.send(stats);
   } catch (error) {
     console.log(error);

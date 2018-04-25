@@ -16,7 +16,6 @@ const getFiles = async dir => {
 const getComponents = async componentsFolderPath => {
   try {
     const files = await recursive(componentsFolderPath);
-    console.log(files);
     return files.length;
   } catch (error) {
     throw new Error(
